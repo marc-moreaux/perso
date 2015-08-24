@@ -1,0 +1,56 @@
+\documentclass[a4paper]{article}
+\usepackage[colorlinks=true, urlcolor=blue]{hyperref}
+\usepackage{fancyref}
+
+\begin{document}
+
+	\title{Action recognition : a short review}
+
+
+	\section{Introduction}
+		In this document, we are going to review several techniques used for action recognition.
+		% Method for gathering the papers
+		The main method used to gather the papers was by going through famous international conferences' websites and searching for scientific papers related to the topic of our choice. The conferences we went through are either robotic conferences (e.g. ICRA \footnote{International Conference on Robotics and Automation} and IROS \footnote{International conference on Intelligent RObots and Systems}), Computer Vision conferences (e.g. CVPR \footnote{Computer Vision and Pattern Recognition} and ECCV \footnote{European Conference of Computer Vision} or Neural Network conferences (e.g. NIPS \footnote{Neural Information Processing Systems}).
+
+	\section{Papers}
+		In this section, we list the paper held for analysis. Sorted by conferences, we get :
+		\begin{itemize}
+			\item IROS 2014 : \href{http://mediatum.ub.tum.de/doc/1244178/00196267309484.pdf}{Automatic Segmentation and Recognition of Human Activities from Observation based on Semantic Reasoning} -- \href{https://www.youtube.com/watch?v=oeH1oy5Htz4}{video at 1:15'21}
+			\item IROS 2014 : \href{https://www.deepdyve.com/lp/institute-of-electrical-and-electronics-engineers/complexity-based-motion-features-and-their-applications-to-action-xmhZ06qZYP}{complexity based motion features and their applications to action} -- \href{https://www.youtube.com/watch?v=hW_AEQnSdCs}{video link at 59'50}
+			\item IROS 2014 : \href{http://www.csc.kth.se/~hedvig/publications/iros_14.pdf}{Audio-Visual Classification and Detection of Human Manipulation Actions}
+
+			\item CVPR 2011 : \href{https://hal.inria.fr/inria-00583818/document}{Action Recognition by Dense Trajectories}
+			\item CVPR 2014 : \href{http://www.cv-foundation.org/openaccess/content_cvpr_2014/papers/Karpathy_Large-scale_Video_Classification_2014_CVPR_paper.pdf}{Large-scale Video Classification with Convolutional Neural Networks}
+			\item ECCV 2014 : \href{http://pengxj.github.io/papers/PZQP_ECCV14_SFV.pdf}{Action Recognition with Stacked Fisher Vectors}
+			\item ECCV 2014 : \href{http://www.ee.ucr.edu/~mhasan/papers/eccv2014HasanAmit.pdf}{Continuous Learning of Human Activity Models using Deep Nets}
+			\item ECCV 2014 : \href{http://web.engr.oregonstate.edu/~sinisa/research/publications/eccv14_HiRF.pdf}{HiRF: Hierarchical Random Field for Collective Activity Recognition in Videos}
+
+
+			\item ICLR 2014 : \href{http://arxiv.org/pdf/1310.1811v1.pdf}{End-to-End Text Recognition with Hybrid HMM Maxout Models}
+			\item NIPS 2014 : \href{http://papers.nips.cc/paper/5565-submodular-attribute-selection-for-action-recognition-in-video.pdf}{Submodular Attribute Selection for Action Recognition in Video}
+			\item NIPS 2014 : \href{http://papers.nips.cc/paper/5573-joint-training-of-a-convolutional-network-and-a-graphical-model-for-human-pose-estimation.pdf}{Joint Training of a Convolutional Network and a Graphical Model for Human Pose Estimation}
+			\item NIPS 2014 : \href{http://papers.nips.cc/paper/5280-restricted-boltzmann-machines-modeling-human-choice.pdf}{Restricted Boltzmann machines modeling human choice}
+			\item NIPS 2014 : \href{http://papers.nips.cc/paper/5353-two-stream-convolutional-networks-for-action-recognition-in-videos.pdf}{Two-Stream Convolutional Networks for Action Recognition in Videos}
+		\end{itemize}
+
+	\section{Analysis of the papers}
+		\subsection{Discrete Time series}
+			One way of dealing with the classification of the events is with discrete time series. For this matter, one may use HMM (Hidden Markov Model) or DTW (Discrete Time Wrapping). The HMM encodes the probability that a suite features (observations) is an action, whereas the DTW is "an algorithm for measuring similarity between two temporal sequences which may vary in time or speed" \footnote{\url{https://en.wikipedia.org/wiki/Dynamic_time_warping}}. Visually, the algorithm compares 2 curves in time and try to match them with the possibility to compress time.
+			
+			Another approach to recognizing an action is by comparing the leaps that happen in the action. In their paper\cite{kwon2014complexity}, the authors search for these leaps (\textit{Codewords}) using a complexity function (predictive information\cite{bialek2001predictability}). After collecting these leaps, they use a classifier to recognize the actions.
+
+
+
+		\subsection{}
+			Another approach to action recognition is to have a robot able to learn new actions as it's seeing them. On the paper\cite{ramirez2014automatic}, the authors propose a flexible and adaptable framework to real-life situations to transfer skills from humans to robots. The robot uses semantic reasoning to establish a relationship between human motions and object properties to understand the activity seen. In this paper, the training samples are described by the attributes \textit{Hand motion}, \textit{ObjectActedOn} and \textit{ObjectInHand}. To compute the decision tree they use information gain measure.)
+
+		\subsection{The neural network approach}
+
+
+
+
+\bibliographystyle{plain}
+\bibliography{review} 
+
+\end{document}
+
