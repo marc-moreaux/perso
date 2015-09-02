@@ -1,6 +1,8 @@
 \documentclass[a4paper]{article}
 \usepackage[colorlinks=true, urlcolor=blue]{hyperref}
 \usepackage{fancyref}
+\usepackage{mdframed}
+\usepackage[usenames,dvipsnames]{xcolor}
 
 \begin{document}
 
@@ -8,43 +10,102 @@
 
 
 	\section{Introduction}
-		In this document, we are going to review several techniques used for action recognition.
+		In this document, we want to review methods that have been used for action recognition. At the end of this document, we desire having a solution for recognizing actions like 'yes', 'no', 'come closer' and 'help'. 
+
 		% Method for gathering the papers
-		The main method used to gather the papers was by going through famous international conferences' websites and searching for scientific papers related to the topic of our choice. The conferences we went through are either robotic conferences (e.g. ICRA \footnote{International Conference on Robotics and Automation} and IROS \footnote{International conference on Intelligent RObots and Systems}), Computer Vision conferences (e.g. CVPR \footnote{Computer Vision and Pattern Recognition} and ECCV \footnote{European Conference of Computer Vision} or Neural Network conferences (e.g. NIPS \footnote{Neural Information Processing Systems}).
+		The first method I used for gathering the papers was by going through famous international conferences' websites and searching for scientific papers related to the topic of our choice. The conferences I went through are either robotic conferences (e.g. ICRA \footnote{International Conference on Robotics and Automation} and IROS \footnote{International conference on Intelligent RObots and Systems}), Computer Vision conferences (e.g. CVPR \footnote{Computer Vision and Pattern Recognition} and ECCV \footnote{European Conference of Computer Vision} or Neural Network conferences (e.g. NIPS \footnote{Neural Information Processing Systems}).
+		The second method I used was gathering papers top performing in workshops(e.g. \href{http://crcv.ucf.edu/data/UCF101.php}{THUMOS}) or in datasets(e.g. \href{http://crcv.ucf.edu/THUMOS14/results.html}{UCF101}).
 
-	\section{Papers}
-		In this section, we list the paper held for analysis. Sorted by conferences, we get :
+	\section{Articles from conference browsing}
+		The first selection I made is the following (sorted by conferences):
+
 		\begin{itemize}
-			\item IROS 2014 : \href{http://mediatum.ub.tum.de/doc/1244178/00196267309484.pdf}{Automatic Segmentation and Recognition of Human Activities from Observation based on Semantic Reasoning} -- \href{https://www.youtube.com/watch?v=oeH1oy5Htz4}{video at 1:15'21}
-			\item IROS 2014 : \href{https://www.deepdyve.com/lp/institute-of-electrical-and-electronics-engineers/complexity-based-motion-features-and-their-applications-to-action-xmhZ06qZYP}{complexity based motion features and their applications to action} -- \href{https://www.youtube.com/watch?v=hW_AEQnSdCs}{video link at 59'50}
-			\item IROS 2014 : \href{http://www.csc.kth.se/~hedvig/publications/iros_14.pdf}{Audio-Visual Classification and Detection of Human Manipulation Actions}
+			\item IROS 2014 : \href{http://mediatum.ub.tum.de/doc/1244178/00196267309484.pdf}{Automatic Segmentation and Recognition of Human Activities from Observation based on Semantic Reasoning}\cite{ramirez2014automatic} -- \href{https://www.youtube.com/watch?v=oeH1oy5Htz4}{video at 1:15'21}
+			\item IROS 2014 : \href{https://www.deepdyve.com/lp/institute-of-electrical-and-electronics-engineers/complexity-based-motion-features-and-their-applications-to-action-xmhZ06qZYP}{Complexity based motion features and their applications to action}\cite{kwon2014complexity} -- \href{https://www.youtube.com/watch?v=hW_AEQnSdCs}{video link at 59'50}
+			\item IROS 2014 : \href{http://www.csc.kth.se/~hedvig/publications/iros_14.pdf}{Audio-Visual Classification and Detection of Human Manipulation Actions}\cite{pieropan2014audio}
 
-			\item CVPR 2011 : \href{https://hal.inria.fr/inria-00583818/document}{Action Recognition by Dense Trajectories}
-			\item CVPR 2014 : \href{http://www.cv-foundation.org/openaccess/content_cvpr_2014/papers/Karpathy_Large-scale_Video_Classification_2014_CVPR_paper.pdf}{Large-scale Video Classification with Convolutional Neural Networks}
-			\item ECCV 2014 : \href{http://pengxj.github.io/papers/PZQP_ECCV14_SFV.pdf}{Action Recognition with Stacked Fisher Vectors}
-			\item ECCV 2014 : \href{http://www.ee.ucr.edu/~mhasan/papers/eccv2014HasanAmit.pdf}{Continuous Learning of Human Activity Models using Deep Nets}
-			\item ECCV 2014 : \href{http://web.engr.oregonstate.edu/~sinisa/research/publications/eccv14_HiRF.pdf}{HiRF: Hierarchical Random Field for Collective Activity Recognition in Videos}
+			\item CVPR 2011 : \href{https://hal.inria.fr/inria-00583818/document}{Action Recognition by Dense Trajectories}\cite{wang2011action}
+			\item CVPR 2014 : \href{http://www.cv-foundation.org/openaccess/content_cvpr_2014/papers/Karpathy_Large-scale_Video_Classification_2014_CVPR_paper.pdf}{Large-scale Video Classification with Convolutional Neural Networks}\cite{karpathy2014large}
+			\item ECCV 2014 : \href{http://pengxj.github.io/papers/PZQP_ECCV14_SFV.pdf}{Action Recognition with Stacked Fisher Vectors}\cite{peng2014action}
+			\item ECCV 2014 : \href{http://www.ee.ucr.edu/~mhasan/papers/eccv2014HasanAmit.pdf}{Continuous Learning of Human Activity Models using Deep Nets} **TODO**
+			\item ECCV 2014 : \href{http://web.engr.oregonstate.edu/~sinisa/research/publications/eccv14_HiRF.pdf}{HiRF: Hierarchical Random Field for Collective Activity Recognition in Videos} **TODO**
+			\item  CVPR 2015 : \href{http://arxiv.org/pdf/1411.4006.pdf}{A Discriminative CNN Video Representation for Event Detection}\cite{xu2014discriminative}
 
 
-			\item ICLR 2014 : \href{http://arxiv.org/pdf/1310.1811v1.pdf}{End-to-End Text Recognition with Hybrid HMM Maxout Models}
-			\item NIPS 2014 : \href{http://papers.nips.cc/paper/5565-submodular-attribute-selection-for-action-recognition-in-video.pdf}{Submodular Attribute Selection for Action Recognition in Video}
-			\item NIPS 2014 : \href{http://papers.nips.cc/paper/5573-joint-training-of-a-convolutional-network-and-a-graphical-model-for-human-pose-estimation.pdf}{Joint Training of a Convolutional Network and a Graphical Model for Human Pose Estimation}
-			\item NIPS 2014 : \href{http://papers.nips.cc/paper/5280-restricted-boltzmann-machines-modeling-human-choice.pdf}{Restricted Boltzmann machines modeling human choice}
-			\item NIPS 2014 : \href{http://papers.nips.cc/paper/5353-two-stream-convolutional-networks-for-action-recognition-in-videos.pdf}{Two-Stream Convolutional Networks for Action Recognition in Videos}
+			\item NIPS 2014 : \href{http://papers.nips.cc/paper/5565-submodular-attribute-selection-for-action-recognition-in-video.pdf}{Submodular Attribute Selection for Action Recognition in Video} **TODO**
+			\item NIPS 2014 : \href{http://papers.nips.cc/paper/5573-joint-training-of-a-convolutional-network-and-a-graphical-model-for-human-pose-estimation.pdf}{Joint Training of a Convolutional Network and a Graphical Model for Human Pose Estimation}\cite{tompson2014joint}
+			\item NIPS 2014 : \href{http://papers.nips.cc/paper/5353-two-stream-convolutional-networks-for-action-recognition-in-videos.pdf}{Two-Stream Convolutional Networks for Action Recognition in Videos} **TODO**
 		\end{itemize}
 
-	\section{Analysis of the papers}
-		\subsection{Discrete Time series}
-			One way of dealing with the classification of the events is with discrete time series. For this matter, one may use HMM (Hidden Markov Model) or DTW (Discrete Time Wrapping). The HMM encodes the probability that a suite features (observations) is an action, whereas the DTW is "an algorithm for measuring similarity between two temporal sequences which may vary in time or speed" \footnote{\url{https://en.wikipedia.org/wiki/Dynamic_time_warping}}. Visually, the algorithm compares 2 curves in time and try to match them with the possibility to compress time.
-			
-			Another approach to recognizing an action is by comparing the leaps that happen in the action. In their paper\cite{kwon2014complexity}, the authors search for these leaps (\textit{Codewords}) using a complexity function (predictive information\cite{bialek2001predictability}). After collecting these leaps, they use a classifier to recognize the actions.
+
+
+	\section{Analysis of some articles}
+
+		\subsection{Semantic reasoning and audio input}
+			On the IROS 2014, an author\cite{ramirez2014automatic} approached action recognition using a semantic reasoning over observations. To be more precise, they developed a flexible and adaptable framework to real-life situations to transfer skills from humans to robots. 
+			As a first step, the framework extract relevant aspects of the task. Here, the framework recognize hand and object motions to infer if an operator is moving something. On a second step, they processes these informations to infer the goal of the demonstration. To detect if an action is new or not, they use the 'C4.5 algorithm'. Finally it transfers the goal to the robot. 
+
+			\begin{mdframed}[backgroundcolor = gray!30]
+				In fact, this framework could be useful for transfer learning. With the requirement to recognize actions the robot can do, the robot would effectively be able to learn and reproduce. On their paper, the author use color detection to recognize the different elements (hand, and objects). With a more advanced object recognition (like table-top) and a proper hand detection (or human pose estimation\cite{tompson2014joint}), I guess we would be able to have a more robust learner.
+			\end{mdframed}
+
+
+			On this other paper\cite{pieropan2014audio}, the authors propose to take advantage of other inputs than the video input stream. They propose to incorporate the sound to their input features. In their scenario, using the sound make sense as they are manipulating noisy objects (e.g. cereal box, mug). The tracking is performed with a pose tracking algorithms, then, a feature is created characterizing each pairwise objects’ spatial relationships (like the distance between the bowl and the cereal box) and a sound feature is extracted from the the 'Mel Frequency Cepstral Coefficients'. With these two set of features, they train many HMMs. Evaluated on a dataset the authors created, the authors always get better performances with both sets of features ($.05\%$ point to $.5 \%$ point)(action recognized: pour milk, pour cereals, garbage).
+
+			\begin{mdframed}[backgroundcolor = gray!30]
+				Obviously, we could consider taking advantage of the noise to recognize human actions. This decision will only depend on the actions we aim to detect. On this paper, the authors use noise over sounds. In our case, when we want to detect a 'yes', this method may suffer voice differences over individuals.
+			\end{mdframed}
+
+		\subsection{Dense Trajectories}
+		\label{sub:dense_trajectories}
+		
+		% subsection subsection_name (end)
+			THUMOS challenge\cite{THUMOS14} is an action recognition challenge where the competitors have to classify videos belonging to 101 action classes. In 2014, the team winning this challenge used a method based on Dense Trajectories (DT). To have a better overview of this method, I rolled back until 2011, when a team published a paper based Dense Trajectories\cite{wang2011action}. DT is an algorithm running on a video sequence. It chooses specific points in a picture and track these points frame after frames. With this technique one can track a motion and from this motion the authors create a \textit{trajectory descriptor}. Around this trajectory (evolving in time), the authors extract a space-time volume and consider the HOGHOF and MBH descriptors (present in the space-time volume). Given these descriptors, the authors constructs codebooks (with k-means) which are combined by a Bag-Of-Features(BOF) and finally, classified by an SVM.
+
+			In 2013, another paper continuing this research was released\cite{wang2013action}. In this new paper, the authors perfect the action recognition by removing the camera motion. In order to remove this camera motion, the authors estimate the homography in the video using the RANSAC algorithm (which is based on a combination of SURF and optical flow descriptors). To double check and remove some inconsistencies on the background-foreground segmentation, the authors also include a human detector (as foreground detection). With this foreground segmentation, the motion-based descriptors seen on the article above and the same codebook/BOF, the motion recognition perform better. The research didn't stopped their as the authors also compared the performance of codebook/BOF with another technique called Feature Vector (FV) and found that, here, FV was performing better than the other approach. 
+
+			Feature vector was introduced in image classification in 2007\cite{perronnin2007fisher} and further extended then (e.g. improvements\cite{perronnin2010improving} or Stacked FV\cite{peng2014action}). 
+
+			\begin{mdframed}[backgroundcolor = gray!30]
+				In our recognition task, we'll definitely, need an algorithm able to compare trajectories. If we don't need the full Dense Trajectory (DT) algorithm, pieces of it might be useful. I think here of the space-time volume descriptor. Indeed, building a codebook/BOF or FV representation of relevant actions taken by the user might be a convenient descriptor to us.
+			\end{mdframed}
 
 
 
-		\subsection{}
-			Another approach to action recognition is to have a robot able to learn new actions as it's seeing them. On the paper\cite{ramirez2014automatic}, the authors propose a flexible and adaptable framework to real-life situations to transfer skills from humans to robots. The robot uses semantic reasoning to establish a relationship between human motions and object properties to understand the activity seen. In this paper, the training samples are described by the attributes \textit{Hand motion}, \textit{ObjectActedOn} and \textit{ObjectInHand}. To compute the decision tree they use information gain measure.)
+		\subsection{On the recognition algorithm}
+		\label{sub:reco_algo}
+			One way of dealing with the classification of the events is using discrete time. The two most common approaches are, first, the Hidden Markov Model (HMM) and second, the Discrete Time Wrapping (DTW). The HMM encodes the probability of a suite of features (observations) being an action, whereas the DTW is "an algorithm for measuring similarity between two temporal sequences which may vary in time or speed" \footnote{\url{https://en.wikipedia.org/wiki/Dynamic_time_warping}}.
+
+			On an article\cite{kwon2014complexity} presented at IROS 2014, the authors prefer comparing leaps happening in an action. As in section\ref{sub:dense_trajectories}, the authors use codewords, but the generation of these codewords is far different. Instead of using K-means, the authors retrieve meaningful motion trajectories using \textit{predictive information}\cite{bialek2001predictability} as their motion complexity measure. After collecting these leaps, they use a classifier to recognize the actions.
+
+			I'm unable to tell more about this last article as I didn't have access to the full PDF.
+
+			\begin{mdframed}[backgroundcolor = gray!30]
+				As mentioned on the previous remark block, one of this algorithm will be needed. On the leaps paper, the generation of the codewords seems far less random than the k-mean used with the dense trajectories. Again, access to this full PDF will give me more insight on the benefits of this technique.
+			\end{mdframed}
+
+
 
 		\subsection{The neural network approach}
+			On this paper\cite{karpathy2014large}, the authors classify 1 million videos belonging to 487 classes of sports. The paper describe different architectures for the CNN to be build (single frame, late fusion, early fusion and slow fusion), then present a way to increase the learning time of the net. At the end of the paper, quantitative results are shown given the architecture.
+
+			The top performing \href{http://storage.googleapis.com/www.thumos.info/thumos15_notebooks/TH15_UTS&CMU.pdf}{solution} proposed at THUMOS2015\cite{THUMOS15} relies on two sets of features. The first set of feature is extracted from a trained Convolutional Neural Network (CNN) and the second set are the dense trajectories (DT) seen previously. To be more precise, the authors of the solution published a paper\cite{xu2014discriminative} in which they further explain their method. The CNN they used is based on the architecture of \cite{simonyan2014very} (the CNN with 16 weights layers). Once their CNN is trained, they extract features from layer \textit{pool$_5$} (representing spatial locations ), \textit{fc$_6$} and \textit{fc$_7$} (being good discriminative latent variables). After some preprocessing, these CNN features and the DT features are classified using a VLAD.
+
+			\begin{mdframed}[backgroundcolor = gray!30]
+				The first technique is a good overview of neural network use for video classification (thought I might don't use this paper).
+				The second paper seems more interesting to us than the first one. This algorithm is capable of recognizing a video by extracting single frame descriptors and movement descriptors. This method could be used by the robot to recognize human playing in front of himself. Now, this algorithm uses far to many parameters to be implemented in a robot. I believe thought, a smaller CNN (or Convolutional-auto-encoder neural net) could perform mearly as good and be implemented in the robot at 'little' cost.
+			\end{mdframed}
+
+			Another domain where neural nets applies is human-pose-estimation. At NIPS 2014, an article\cite{tompson2014joint} was presented where the authors detected the human posed with both a Convolution Neural Net and a Markov Random Field (MRF). The CNN was trained to produce a heat map of the joint. I other words, we have an image, and we use a sliding (two actually) window to find interesting joints on these sliding window. With these sliding windows, the authors produce a heat map (representing the probability of each joints being at particular locations) of the joints over the image. This heat map present some incoherences (e.g. head between shoulder and knee), which are corrected with a Markov Random Field calculating pairwise probabilities of joints. Quantitatively : this model outperforms any other methods for human pose but computing a real-time response of a frame can be expensive on a robot. The authors reach a 51ms propagation on a 12CPU workstation with an NVIDIA Titan GPU. 
+
+			Another paper\cite{tompson2014real}, similar to this one, uses CNN and Inverse Kinematic Pose Recovery (IK) to perform a pose recovery of a human hand. In their (long) article, the authors first explain how they build their \href{http://cims.nyu.edu/~tompson/NYU_Hand_Pose_Dataset.htm}{dataset}. Then they explain how they trained a Randomized Decision Forest (RDF) for depth segmentation and their CNN for the pose estimation. Finally they explain how they manage errors with IK. The authors build a dataset where they filmed a red-painted to improving the hand detection (through color detection) and added sensors to determine in which position are each fingers. With this dataset, they learn a CNN trained at recognizing specific joints of the hand. With the IK algorithm and Degree Of Freedom (DOF) values (given for the hand model), the authors remove inaccuracies. On their machine, the detection process takes 24.9ms. This result is considering that forwarding the signal on the CNN with their GPU takes 5.6ms (where it would take 139ms on their CPU). (\href{https://www.youtube.com/watch?v=J4c_x1QnW0A}{video demonstration})
+
+			\begin{mdframed}[backgroundcolor = gray!30]
+				These two papers seems, in some ways, promising. At the end of their algorithms, the computer is able to retrieve, either an accurate human pose estimation, or an accurate hand pose estimation. The major drawback seen from the 1st article comes from the pose estimation time which is around 51ms on a killer machine. I believe that on any of the robots this approach will work (maybe down-grading it...). The other article seems far more promising for the robot case. Even if it takes 159ms (on their CPU), retrieving 3*2 hand positions per second could be enough for our robot. I believe we can lower the execution time of this algorithm reducing the amount of parameter (and losing some information).
+
+				With this hand pose detected we can use one of the techniques seen in section\ref{sub:reco_algo} to compare the current action perform and some past actions. 
+			\end{mdframed}
+
 
 
 
