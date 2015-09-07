@@ -13,8 +13,9 @@
 		In this document, we want to review methods that have been used for action recognition. At the end of this document, we desire having a solution for recognizing actions like 'yes', 'no', 'come closer' and 'help'. 
 
 		% Method for gathering the papers
-		The first method I used for gathering the papers was by going through famous international conferences' websites and searching for scientific papers related to the topic of our choice. The conferences I went through are either robotic conferences (e.g. ICRA \footnote{International Conference on Robotics and Automation} and IROS \footnote{International conference on Intelligent RObots and Systems}), Computer Vision conferences (e.g. CVPR \footnote{Computer Vision and Pattern Recognition} and ECCV \footnote{European Conference of Computer Vision} or Neural Network conferences (e.g. NIPS \footnote{Neural Information Processing Systems}).
-		The second method I used was gathering papers top performing in workshops(e.g. \href{http://crcv.ucf.edu/data/UCF101.php}{THUMOS}) or in datasets(e.g. \href{http://crcv.ucf.edu/THUMOS14/results.html}{UCF101}).
+		The first method I used for gathering the papers was by going through famous international conferences' websites and searching for scientific papers related to the topic of our choice. The conferences I went through are either robotic conferences (e.g. ICRA \footnote{International Conference on Robotics and Automation} and IROS \footnote{International conference on Intelligent RObots and Systems}), Computer Vision conferences (e.g. CVPR \footnote{Computer Vision and Pattern Recognition} and ECCV \footnote{European Conference of Computer Vision}) or Neural Network conferences (e.g. NIPS \footnote{Neural Information Processing Systems}).
+
+		After having a deeper insight on the subject, I browsed through \textit{Google scholar} to find further articles on action recognition.
 
 	\section{Articles from conference browsing}
 		The first selection I made is the following (sorted by conferences):
@@ -40,7 +41,17 @@
 
 	\section{Analysis of some articles}
 
+		We are going to analyze the papers with the following order:
+		\begin{itemize}
+			\item Section \ref{sub:semantic} review 2 articles that could be interesting for later purposes. They could be used to open our sights to new approaches to the issue.
+			\item Section \ref{sub:dense_trajectories} reviews a technique (dense trajectories) that was, in 2014, outperforming any other approach in a given action recognition challenge.
+			\item Section \ref{sub:neural} introduces us to a neural net approach to action recognition, one of which outperformed the previously mentioned contest in 2015. It also present other approaches to the issue as well as a human pose estimation.
+			\item Section \ref{sub:human-pose} reviews other human-pose methods.
+			\item Section \ref{sub:reco_algo} reviews algorithms used to classify observations done through time.
+		\end{itemize}
+
 		\subsection{Semantic reasoning and audio input}
+		\label{sub:semantic}
 			On the IROS 2014, an author\cite{ramirez2014automatic} approached action recognition using a semantic reasoning over observations. To be more precise, they developed a flexible and adaptable framework to real-life situations to transfer skills from humans to robots. 
 			As a first step, the framework extract relevant aspects of the task. Here, the framework recognize hand and object motions to infer if an operator is moving something. On a second step, they processes these informations to infer the goal of the demonstration. To detect if an action is new or not, they use the 'C4.5 algorithm'. Finally it transfers the goal to the robot. 
 
@@ -71,26 +82,8 @@
 
 
 
-		\subsection{On the recognition algorithm}
-		\label{sub:reco_algo}
-			One way of dealing with the classification of the events is using discrete time. The two most common approaches are, first, the Hidden Markov Model (HMM) and second, the Discrete Time Wrapping (DTW). The HMM encodes the probability of a suite of features (observations) being an action, whereas the DTW is "an algorithm for measuring similarity between two temporal sequences which may vary in time or speed" \footnote{\url{https://en.wikipedia.org/wiki/Dynamic_time_warping}}.
-
-			On an article\cite{kwon2014complexity} presented at IROS 2014, the authors prefer comparing leaps happening in an action. As in section\ref{sub:dense_trajectories}, the authors use codewords, but the generation of these codewords is far different. Instead of using K-means, the authors retrieve meaningful motion trajectories using \textit{predictive information}\cite{bialek2001predictability} as their motion complexity measure. After collecting these leaps, they use a classifier to recognize the actions. I'm unable to tell more about this last article as I didn't have access to the full PDF.
-
-
-			On this article\cite{cheron2015p}, the authors use the Fisher vector described earlier to classify human pose estimation.
-
-			On this article\cite{zanfir2013moving}, the authors compare some action recognition from human-pose technique to their new algorithm (Moving Pose). Their algorithm seems very promising. It uses a modified kNN classifier (based on temporal location of a particular frame as well as a discriminative power of its moving pose descriptor). The resulting method is non-parametric and enables low-latency recognition (real-time), one-shot learning, and action detection in difficult unsegmented sequences (taken form the abstract). 
-
-			\begin{mdframed}[backgroundcolor = gray!30]
-				As mentioned on the previous remark block, one of this algorithm will be needed. On the leaps paper\cite{kwon2014complexity}, the generation of the codewords seems far less random than the k-mean used with the dense trajectories. Again, access to this full PDF will give me more insight on the benefits of this technique.
-
-				The method proposed on article\cite{zanfir2013moving} seems promising given a human-pose. It has the advantage of being discriminative towards other actions and is one-shot learning. From the results given, it's also a good alternative.
-			\end{mdframed}
-
-
-
 		\subsection{The neural network approach}
+		\label{sub:neural}
 			On this paper\cite{karpathy2014large}, the authors classify 1 million videos belonging to 487 classes of sports. The paper describe different architectures for the CNN to be build (single frame, late fusion, early fusion and slow fusion), then present a way to increase the learning time of the net. At the end of the paper, quantitative results are shown given the architecture.
 
 			The top performing \href{http://storage.googleapis.com/www.thumos.info/thumos15_notebooks/TH15_UTS&CMU.pdf}{solution} proposed at THUMOS2015\cite{THUMOS15} relies on two sets of features. The first set of feature is extracted from a trained Convolutional Neural Network (CNN) and the second set are the dense trajectories (DT) seen previously. To be more precise, the authors of the solution published a paper\cite{xu2014discriminative} in which they further explain their method. The CNN they used is based on the architecture of \cite{simonyan2014very} (the CNN with 16 weights layers). Once their CNN is trained, they extract features from layer \textit{pool$_5$} (representing spatial locations ), \textit{fc$_6$} and \textit{fc$_7$} (being good discriminative latent variables). After some preprocessing, these CNN features and the DT features are classified using a VLAD.
@@ -98,11 +91,13 @@
 			An other paper\cite{simonyan2014two}, published at NIPS, proposed a "two-stream architecture" for video classification. This network is composed by two CNNs. One is a CNN over a single frame (therefore, giving a score to an action based on an image), and the other is a CNN over an optical-flow image (therefore, giving a score to an action based on the flow appearing on a sequence of images). The two CNNs are merged in a class-score after each of their softmax's functions (late-fusion). Once the score is given for each of the frame, a averaging is done or a SVM is trained on stacked L2-normalised softmax scores (as features). This method (with SVM) appears to be very effective on the UFC-101 dataset, outperforming the referenced papers. On the article, we don't have time estimation for a possible real-time application.
 
 			\begin{mdframed}[backgroundcolor = gray!30]
-				The first technique is a good overview of neural network use for video classification (thought I might don't use this paper).
+				The first article is a good overview of neural network use for video classification (thought I might don't use this paper).
+
 				The second paper seems more interesting to us than the first one. This algorithm is capable of recognizing a video by extracting single frame descriptors and movement descriptors. This method could be used by the robot to recognize human actions. Now, this algorithm uses far to many parameters to be implemented in a robot. I believe thought, a smaller CNN (or Convolutional-auto-encoder neural net) could perform merely as good and be implemented in the robot at 'little' cost.
+				
 				Finally, the third paper, is also a good paper that could be implemented for the robot (depending on processing time). 
 
-
+				\vskip 1em				
 				I would enjoy this comment to make a remark on these 3 articles. (a) All of these algorithms recognize actions as they would be seen on a movie (the videos are movie-like and not human-embedded-like). (b) The classes of UCF-101 are more separated from each others than 'yes' / 'no' classes would be. (c) Most of the time, on the robot environment, none of the classes will happen. (d) The articles aren't real-time, as such, they doesn't manage time segmentation of actions (though a twist should make it).
 
 			\end{mdframed}
@@ -124,6 +119,7 @@
 			\end{mdframed}
 
 		\subsection{Other approaches to Human Pose Estimation: }
+		\label{sub:human-pose}
 			In 2012, an article\cite{ganapathi2012real} (coming with the EVAL dataset), proposed a method for estimating the human pose. This method was a mixture of two others. On the first part, they reused the principle of Iterative Closest Points (ICP). This algorithm, compares a 3D model to a 3D observation to match one on each other. The second algorithm is the Ray-Casting model which, from a 2D observation tries to rebuild (or infer) the 3D model behind it. the authors merge these two methods in a "Ray-Constrained ICP Model". The model they feet on their observations models "the human body as a collection of linked 3D volumes". A transition model ensure some consistency over frames. For SMMC-10 dataset, this algorithm reaches over $.95\%$ tracking accuracy and around $.85\%$ for the EVAL dataset (for a joint tracked within a 10cm sphere around true joint). Further more, this approach runs at 125 frames per second on a single desktop CPU core.
 
 			At CVPR 2014, a new approach was presented \cite{ye2014real}. The authors "embed the articulated deformation model with exponential-maps-based parametrization into a Gaussian Mixture Model". With this method, better results are retrieved than the previous paper, they get a similar result on SMMC-10 (little over $.95\%$) but on EVAL, they reach around $.9\%$ accuracy. The main drawback of this technique is the computation time that achieves real-time performance (> 30 frames per second) but on a GPU Geforce GTX 560.
@@ -132,6 +128,25 @@
 
 			\begin{mdframed}[backgroundcolor = gray!30]
 				I partially downloaded the \href{http://ai.stanford.edu/~varung/cvpr10/}{SMMC-10 dataset}. At first glance, this dataset seems to only contain depth values. From the visible video, it seems that the dataset has low background noise. From this observation, we can balance the performance of these algorithms. All three of them perform very good at recognizing human-pose in real-time, but all three of them would be sensible to background noise if there was. (Other datasets on this \href{https://github.com/colincsl/RGBD-Dataset-Reader}{Github}).
+			\end{mdframed}
+
+
+
+		\subsection{On the recognition algorithm}
+		\label{sub:reco_algo}
+			One way of dealing with the classification of the events is using discrete time. The two most common approaches are, first, the Hidden Markov Model (HMM) and second, the Discrete Time Wrapping (DTW). The HMM encodes the probability of a suite of features (observations) being an action, whereas the DTW is "an algorithm for measuring similarity between two temporal sequences which may vary in time or speed" \footnote{\url{https://en.wikipedia.org/wiki/Dynamic_time_warping}}.
+
+			On an article\cite{kwon2014complexity} presented at IROS 2014, the authors prefer comparing leaps happening in an action. As in section\ref{sub:dense_trajectories}, the authors use codewords, but the generation of these codewords is far different. Instead of using K-means, the authors retrieve meaningful motion trajectories using \textit{predictive information}\cite{bialek2001predictability} as their motion complexity measure. After collecting these leaps, they use a classifier to recognize the actions. I'm unable to tell more about this last article as I didn't have access to the full PDF.
+
+
+			On this article\cite{cheron2015p}, the authors use the Fisher vector described earlier to classify human pose estimation.
+
+			On this article\cite{zanfir2013moving}, the authors compare some action recognition from human-pose technique to their new algorithm (Moving Pose). Their algorithm seems very promising. It uses a modified kNN classifier (based on temporal location of a particular frame as well as a discriminative power of its moving pose descriptor). The resulting method is non-parametric and enables low-latency recognition (real-time), one-shot learning, and action detection in difficult unsegmented sequences (taken form the abstract). 
+
+			\begin{mdframed}[backgroundcolor = gray!30]
+				On the leaps paper\cite{kwon2014complexity}, the generation of the codewords seems far less random than the k-mean used with the dense trajectories. Again, access to this full PDF will give me more insight on the benefits of this technique.
+
+				The method proposed on article\cite{zanfir2013moving} seems promising given a human-pose. It has the advantage of being discriminative towards other actions and is one-shot learning. From the results given, it's also a good alternative.
 			\end{mdframed}
 		
 
