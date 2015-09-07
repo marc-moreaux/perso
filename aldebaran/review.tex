@@ -27,14 +27,13 @@
 			\item CVPR 2011 : \href{https://hal.inria.fr/inria-00583818/document}{Action Recognition by Dense Trajectories}\cite{wang2011action}
 			\item CVPR 2014 : \href{http://www.cv-foundation.org/openaccess/content_cvpr_2014/papers/Karpathy_Large-scale_Video_Classification_2014_CVPR_paper.pdf}{Large-scale Video Classification with Convolutional Neural Networks}\cite{karpathy2014large}
 			\item ECCV 2014 : \href{http://pengxj.github.io/papers/PZQP_ECCV14_SFV.pdf}{Action Recognition with Stacked Fisher Vectors}\cite{peng2014action}
-			\item ECCV 2014 : \href{http://www.ee.ucr.edu/~mhasan/papers/eccv2014HasanAmit.pdf}{Continuous Learning of Human Activity Models using Deep Nets} **TODO**
-			\item ECCV 2014 : \href{http://web.engr.oregonstate.edu/~sinisa/research/publications/eccv14_HiRF.pdf}{HiRF: Hierarchical Random Field for Collective Activity Recognition in Videos} **TODO**
+			\item ECCV 2014 : \href{http://web.engr.oregonstate.edu/~sinisa/research/publications/eccv14_HiRF.pdf}{HiRF: Hierarchical Random Field for Collective Activity Recognition in Videos}. Not reviewed
 			\item  CVPR 2015 : \href{http://arxiv.org/pdf/1411.4006.pdf}{A Discriminative CNN Video Representation for Event Detection}\cite{xu2014discriminative}
 
 
-			\item NIPS 2014 : \href{http://papers.nips.cc/paper/5565-submodular-attribute-selection-for-action-recognition-in-video.pdf}{Submodular Attribute Selection for Action Recognition in Video} **TODO**
+			\item NIPS 2014 : \href{http://papers.nips.cc/paper/5565-submodular-attribute-selection-for-action-recognition-in-video.pdf}{Submodular Attribute Selection for Action Recognition in Video}. Not reviewed
 			\item NIPS 2014 : \href{http://papers.nips.cc/paper/5573-joint-training-of-a-convolutional-network-and-a-graphical-model-for-human-pose-estimation.pdf}{Joint Training of a Convolutional Network and a Graphical Model for Human Pose Estimation}\cite{tompson2014joint}
-			\item NIPS 2014 : \href{http://papers.nips.cc/paper/5353-two-stream-convolutional-networks-for-action-recognition-in-videos.pdf}{Two-Stream Convolutional Networks for Action Recognition in Videos} **TODO**
+			\item NIPS 2014 : \href{http://papers.nips.cc/paper/5353-two-stream-convolutional-networks-for-action-recognition-in-videos.pdf}{Two-Stream Convolutional Networks for Action Recognition in Videos}\cite{simonyan2014two}
 		\end{itemize}
 
 
@@ -76,12 +75,17 @@
 		\label{sub:reco_algo}
 			One way of dealing with the classification of the events is using discrete time. The two most common approaches are, first, the Hidden Markov Model (HMM) and second, the Discrete Time Wrapping (DTW). The HMM encodes the probability of a suite of features (observations) being an action, whereas the DTW is "an algorithm for measuring similarity between two temporal sequences which may vary in time or speed" \footnote{\url{https://en.wikipedia.org/wiki/Dynamic_time_warping}}.
 
-			On an article\cite{kwon2014complexity} presented at IROS 2014, the authors prefer comparing leaps happening in an action. As in section\ref{sub:dense_trajectories}, the authors use codewords, but the generation of these codewords is far different. Instead of using K-means, the authors retrieve meaningful motion trajectories using \textit{predictive information}\cite{bialek2001predictability} as their motion complexity measure. After collecting these leaps, they use a classifier to recognize the actions.
+			On an article\cite{kwon2014complexity} presented at IROS 2014, the authors prefer comparing leaps happening in an action. As in section\ref{sub:dense_trajectories}, the authors use codewords, but the generation of these codewords is far different. Instead of using K-means, the authors retrieve meaningful motion trajectories using \textit{predictive information}\cite{bialek2001predictability} as their motion complexity measure. After collecting these leaps, they use a classifier to recognize the actions. I'm unable to tell more about this last article as I didn't have access to the full PDF.
 
-			I'm unable to tell more about this last article as I didn't have access to the full PDF.
+
+			On this article\cite{cheron2015p}, the authors use the Fisher vector described earlier to classify human pose estimation.
+
+			On this article\cite{zanfir2013moving}, the authors compare some action recognition from human-pose technique to their new algorithm (Moving Pose). Their algorithm seems very promising. It uses a modified kNN classifier (based on temporal location of a particular frame as well as a discriminative power of its moving pose descriptor). The resulting method is non-parametric and enables low-latency recognition (real-time), one-shot learning, and action detection in difficult unsegmented sequences (taken form the abstract). 
 
 			\begin{mdframed}[backgroundcolor = gray!30]
-				As mentioned on the previous remark block, one of this algorithm will be needed. On the leaps paper, the generation of the codewords seems far less random than the k-mean used with the dense trajectories. Again, access to this full PDF will give me more insight on the benefits of this technique.
+				As mentioned on the previous remark block, one of this algorithm will be needed. On the leaps paper\cite{kwon2014complexity}, the generation of the codewords seems far less random than the k-mean used with the dense trajectories. Again, access to this full PDF will give me more insight on the benefits of this technique.
+
+				The method proposed on article\cite{zanfir2013moving} seems promising given a human-pose. It has the advantage of being discriminative towards other actions and is one-shot learning. From the results given, it's also a good alternative.
 			\end{mdframed}
 
 
@@ -91,22 +95,56 @@
 
 			The top performing \href{http://storage.googleapis.com/www.thumos.info/thumos15_notebooks/TH15_UTS&CMU.pdf}{solution} proposed at THUMOS2015\cite{THUMOS15} relies on two sets of features. The first set of feature is extracted from a trained Convolutional Neural Network (CNN) and the second set are the dense trajectories (DT) seen previously. To be more precise, the authors of the solution published a paper\cite{xu2014discriminative} in which they further explain their method. The CNN they used is based on the architecture of \cite{simonyan2014very} (the CNN with 16 weights layers). Once their CNN is trained, they extract features from layer \textit{pool$_5$} (representing spatial locations ), \textit{fc$_6$} and \textit{fc$_7$} (being good discriminative latent variables). After some preprocessing, these CNN features and the DT features are classified using a VLAD.
 
+			An other paper\cite{simonyan2014two}, published at NIPS, proposed a "two-stream architecture" for video classification. This network is composed by two CNNs. One is a CNN over a single frame (therefore, giving a score to an action based on an image), and the other is a CNN over an optical-flow image (therefore, giving a score to an action based on the flow appearing on a sequence of images). The two CNNs are merged in a class-score after each of their softmax's functions (late-fusion). Once the score is given for each of the frame, a averaging is done or a SVM is trained on stacked L2-normalised softmax scores (as features). This method (with SVM) appears to be very effective on the UFC-101 dataset, outperforming the referenced papers. On the article, we don't have time estimation for a possible real-time application.
+
 			\begin{mdframed}[backgroundcolor = gray!30]
 				The first technique is a good overview of neural network use for video classification (thought I might don't use this paper).
-				The second paper seems more interesting to us than the first one. This algorithm is capable of recognizing a video by extracting single frame descriptors and movement descriptors. This method could be used by the robot to recognize human playing in front of himself. Now, this algorithm uses far to many parameters to be implemented in a robot. I believe thought, a smaller CNN (or Convolutional-auto-encoder neural net) could perform mearly as good and be implemented in the robot at 'little' cost.
+				The second paper seems more interesting to us than the first one. This algorithm is capable of recognizing a video by extracting single frame descriptors and movement descriptors. This method could be used by the robot to recognize human actions. Now, this algorithm uses far to many parameters to be implemented in a robot. I believe thought, a smaller CNN (or Convolutional-auto-encoder neural net) could perform merely as good and be implemented in the robot at 'little' cost.
+				Finally, the third paper, is also a good paper that could be implemented for the robot (depending on processing time). 
+
+
+				I would enjoy this comment to make a remark on these 3 articles. (a) All of these algorithms recognize actions as they would be seen on a movie (the videos are movie-like and not human-embedded-like). (b) The classes of UCF-101 are more separated from each others than 'yes' / 'no' classes would be. (c) Most of the time, on the robot environment, none of the classes will happen. (d) The articles aren't real-time, as such, they doesn't manage time segmentation of actions (though a twist should make it).
+
 			\end{mdframed}
+
+			\vskip 1em
+			\textbf{human pose: }
+			\vskip 1em
 
 			Another domain where neural nets applies is human-pose-estimation. At NIPS 2014, an article\cite{tompson2014joint} was presented where the authors detected the human posed with both a Convolution Neural Net and a Markov Random Field (MRF). The CNN was trained to produce a heat map of the joint. I other words, we have an image, and we use a sliding (two actually) window to find interesting joints on these sliding window. With these sliding windows, the authors produce a heat map (representing the probability of each joints being at particular locations) of the joints over the image. This heat map present some incoherences (e.g. head between shoulder and knee), which are corrected with a Markov Random Field calculating pairwise probabilities of joints. Quantitatively : this model outperforms any other methods for human pose but computing a real-time response of a frame can be expensive on a robot. The authors reach a 51ms propagation on a 12CPU workstation with an NVIDIA Titan GPU. 
 
-			Another paper\cite{tompson2014real}, similar to this one, uses CNN and Inverse Kinematic Pose Recovery (IK) to perform a pose recovery of a human hand. In their (long) article, the authors first explain how they build their \href{http://cims.nyu.edu/~tompson/NYU_Hand_Pose_Dataset.htm}{dataset}. Then they explain how they trained a Randomized Decision Forest (RDF) for depth segmentation and their CNN for the pose estimation. Finally they explain how they manage errors with IK. The authors build a dataset where they filmed a red-painted to improving the hand detection (through color detection) and added sensors to determine in which position are each fingers. With this dataset, they learn a CNN trained at recognizing specific joints of the hand. With the IK algorithm and Degree Of Freedom (DOF) values (given for the hand model), the authors remove inaccuracies. On their machine, the detection process takes 24.9ms. This result is considering that forwarding the signal on the CNN with their GPU takes 5.6ms (where it would take 139ms on their CPU). (\href{https://www.youtube.com/watch?v=J4c_x1QnW0A}{video demonstration})
+			An article\cite{fan2015combining} emerging from University of South Carolina proposes the same type of approach. This time, one part of the algorithm searches for a body patch and another part of this algorithm searches for a joint in the body patch. evaluated on the "Leeds Sports Pose" dataset, this technique performs better than it concurrents. On the paper, the authors doesn't mention computation costs.
+
+
+			This article\cite{tompson2014real}, similar to \cite{tompson2014joint}, uses CNN and Inverse Kinematic Pose Recovery (IK) to perform a pose recovery of a human hand. In their (long) article, the authors first explain how they build their \href{http://cims.nyu.edu/~tompson/NYU_Hand_Pose_Dataset.htm}{dataset}. Then they explain how they trained a Randomized Decision Forest (RDF) for depth segmentation and their CNN for the pose estimation. Finally they explain how they manage errors with IK. The authors build a dataset where they filmed a red-painted to improving the hand detection (through color detection) and added sensors to determine in which position are each fingers. With this dataset, they learn a CNN trained at recognizing specific joints of the hand. With the IK algorithm and Degree Of Freedom (DOF) values (given for the hand model), the authors remove inaccuracies. On their machine, the detection process takes 24.9ms. This result is considering that forwarding the signal on the CNN with their GPU takes 5.6ms (where it would take 139ms on their CPU). (\href{https://www.youtube.com/watch?v=J4c_x1QnW0A}{video demonstration})
+
 
 			\begin{mdframed}[backgroundcolor = gray!30]
-				These two papers seems, in some ways, promising. At the end of their algorithms, the computer is able to retrieve, either an accurate human pose estimation, or an accurate hand pose estimation. The major drawback seen from the 1st article comes from the pose estimation time which is around 51ms on a killer machine. I believe that on any of the robots this approach will work (maybe down-grading it...). The other article seems far more promising for the robot case. Even if it takes 159ms (on their CPU), retrieving 3*2 hand positions per second could be enough for our robot. I believe we can lower the execution time of this algorithm reducing the amount of parameter (and losing some information).
-
-				With this hand pose detected we can use one of the techniques seen in section\ref{sub:reco_algo} to compare the current action perform and some past actions. 
+				These two papers seems, in some ways, promising. At the end of their algorithms, the computer is able to retrieve, either an accurate human pose estimation, or an accurate hand pose estimation. The major drawback seen from the 1st article comes from the pose estimation time which is around 51ms on a killer machine. I believe that on any of the robots this approach would work (maybe down-grading it...). The other article seems far more promising for the robot case. Even if it takes 159ms (on their CPU), retrieving 3*2 hand positions per second could be enough for our robot. I believe we can lower the execution time of this algorithm reducing the amount of parameter and using an efficient implementation\cite{jin2014efficient}.
 			\end{mdframed}
 
+		\subsection{Other approaches to Human Pose Estimation: }
+			In 2012, an article\cite{ganapathi2012real} (coming with the EVAL dataset), proposed a method for estimating the human pose. This method was a mixture of two others. On the first part, they reused the principle of Iterative Closest Points (ICP). This algorithm, compares a 3D model to a 3D observation to match one on each other. The second algorithm is the Ray-Casting model which, from a 2D observation tries to rebuild (or infer) the 3D model behind it. the authors merge these two methods in a "Ray-Constrained ICP Model". The model they feet on their observations models "the human body as a collection of linked 3D volumes". A transition model ensure some consistency over frames. For SMMC-10 dataset, this algorithm reaches over $.95\%$ tracking accuracy and around $.85\%$ for the EVAL dataset (for a joint tracked within a 10cm sphere around true joint). Further more, this approach runs at 125 frames per second on a single desktop CPU core.
 
+			At CVPR 2014, a new approach was presented \cite{ye2014real}. The authors "embed the articulated deformation model with exponential-maps-based parametrization into a Gaussian Mixture Model". With this method, better results are retrieved than the previous paper, they get a similar result on SMMC-10 (little over $.95\%$) but on EVAL, they reach around $.9\%$ accuracy. The main drawback of this technique is the computation time that achieves real-time performance (> 30 frames per second) but on a GPU Geforce GTX 560.
+
+			Finally, at CVPR 2015\cite{yub2015random}, an article presented a \textit{super-real-time} method for instantaneous 3D human pose. It works as follows: first, you are given a foreground mask to subtract the background. Then, you initialize a point on the human depth image and a regression tree (trained to guess the direction toward a particular joint) is used to find a particular joint. This method appears to be very effective. It has the same (or higher) accuracy as both article just presented. 
+
+			\begin{mdframed}[backgroundcolor = gray!30]
+				I partially downloaded the \href{http://ai.stanford.edu/~varung/cvpr10/}{SMMC-10 dataset}. At first glance, this dataset seems to only contain depth values. From the visible video, it seems that the dataset has low background noise. From this observation, we can balance the performance of these algorithms. All three of them perform very good at recognizing human-pose in real-time, but all three of them would be sensible to background noise if there was. (Other datasets on this \href{https://github.com/colincsl/RGBD-Dataset-Reader}{Github}).
+			\end{mdframed}
+		
+
+		\section{Conclusion}
+			We've seen many things on this review. At first I thought a big CNN would do the entire job, but it doesn't look like. I see 2 main drawback with it. First, the training is based on a huge amount of labeled data (per classes), second the propagation time through the net is too large and doesn't allow (as it is) real-time on a robot.
+
+			There is still options for us. The alternative I would go for is (a) a human-pose estimation followed by (b) an action recognition. 
+			\begin{itemize}
+				\item (a) Can either be based on the Random Tree Walk\cite{yub2015random} algorithm which is \textit{super-real-time} but needs a human segmentation mask. Or (a) can be based on a CNN trained at recognizing human joints \cite{tompson2014real} (more precise).
+				\item (b) Would be recognized either by leap focus \cite{kwon2014complexity} (need more info on this article) (not found on web) or could be recognized by a Nearest Neighbor approach\cite{zanfir2013moving} which is also a fast method.
+			\end{itemize}
+
+			With the other papers, we've learned that sound information could be used in some cases (as a noise) or that semantic information could be an improvement to have the robot reproducing human actions.
 
 
 
