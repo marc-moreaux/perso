@@ -2,76 +2,180 @@
 
 \usepackage[english]{babel}
 \usepackage[utf8]{inputenc}
+\usepackage{etoolbox}
+
 
 \usepackage{tikz}
 
 
 \title{Your amazing Canvas !}
 
+\newcommand*{\myBoxBlack}[6]{
+	% 1 : p_x  --  4 : w_x
+	% 2 : p_y  --  5 : w_y
+	% 3 : p_z  --  6 : w_z
+	\draw[black, fill=white] (#1,-#2,-#3) -- ++(-#4,0,0) -- ++(0,-#5,0) -- ++(#4,0,0) -- cycle;
+	\draw[black, fill=white] (#1,-#2,-#3) -- ++(0,0,-#6) -- ++(0,-#5,0) -- ++(0,0,#6) -- cycle;
+	\draw[black, fill=white] (#1,-#2,-#3) -- ++(-#4,0,0) -- ++(0,0,-#6) -- ++(#4,0,0) -- cycle;
+}
+
+\newcommand*{\myBoxBlackUnfilled}[6]{
+	\draw[black] (#1,-#2,-#3) -- ++(-#4,0,0) -- ++(0,-#5,0) -- ++(#4,0,0) -- cycle;
+	\draw[black] (#1,-#2,-#3) -- ++(0,0,-#6) -- ++(0,-#5,0) -- ++(0,0,#6) -- cycle;
+	\draw[black] (#1,-#2,-#3) -- ++(-#4,0,0) -- ++(0,0,-#6) -- ++(#4,0,0) -- cycle;
+}
+
+\newcommand*{\myBoxGrey}[6]{
+	\draw[black!60, fill=black!25] (#1,-#2,-#3) -- ++(-#4,0,0) -- ++(0,-#5,0) -- ++(#4,0,0) -- cycle;
+	\draw[black!60, fill=black!25] (#1,-#2,-#3) -- ++(0,0,-#6) -- ++(0,-#5,0) -- ++(0,0,#6) -- cycle;
+	\draw[black!60, fill=black!25] (#1,-#2,-#3) -- ++(-#4,0,0) -- ++(0,0,-#6) -- ++(#4,0,0) -- cycle;
+}
+
+% \newrobustcmd*{\mytriangle}[1][2]{\tikz{\draw[thick, fill=#1] (90:\radius) -- (210:\radius) -- (330:\radius) -- cycle;}}
+
 
 \begin{document}
 \maketitle
 
+amphibian	94	591	56K
+animal	3822	732	2799K
+appliance	51	1164	59K
+bird	856	949	812K
+covering	946	819	774K
+device	2385	675	1610K
+fabric	262	690	181K
+fish	566	494	280K
+flower	462	735	339K
+food	1495	670	1001K
+fruit	309	607	188K
+fungus	303	453	137K
+furniture	187	1043	195K
+geological formation	151	838	127K
+invertebrate	728	573	417K
+mammal	1138	821	934K
+musical instrument	157	891	140K
+plant	1666	600	999K
+reptile	268	707	190K
+sport	166	1207	200K
+structure	1239	763	946K
+tool	316	551	174K
+tree	993	568	564K
+utensil	86	912	78K
+vegetable	176	764	135K
+vehicle	481	778	374K
+person	2035	468	952K
+
+
+
+\begin{tikzpicture}
+
+
+\node[text width=4em, text centered] (I-1) at (-2,-1) {Input Image};
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%%% DRAW THE INPUT IMAGE
+\myBoxGrey {0}{.2}{.2}{.3}{.5}{.5}
+\myBoxBlackUnfilled{0}{0}{0}{.3}{3}{3}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%%% DRAW 1st ConvolutionLayer
+\myBoxBlack{2.5}{.25}{0}{1.5}{2.5}{2.5}
+\myBoxBlack{3}{.25}{0}{.3}{2.5}{2.5}
+\myBoxGrey{1.1}{.35}{0}{.05}{.1}{.1}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%%% DRAW 2nd ConvolutionLayer
+\myBoxBlack{4.5}{.4}{0}{.7}{2}{2}
+\myBoxBlack{5}{.4}{0}{.3}{2}{2}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%%% draw split lines for Channels 
+% \foreach \channel in {1,...,15}{
+%     \draw[black,dashed] (2.5-\channel*.1,-.25,0) -- ++(0,-\cubey,0) ;
+%     \draw[black,dashed] (2.5-\channel*.1,-.25,0) -- ++(0,0,-\cubez) ;
+% }
+
+\node[text width=4em, text centered] (I-1) at (6,-1) {...};
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%%% DRAW THE INPUT SOUND
+\pgfmathsetmacro{\yPading}{4.2}
+\node[text width=4em, text centered] (I-1) at (-2,-\yPading) {Input Sound};
+\myBoxGrey {0}{.1-\yPading}{.2}{.3}{.3}{.5}
+\myBoxBlackUnfilled{0}{0-\yPading}{0}{.3}{.5}{3}
+\myBoxBlack{2.5}{0-\yPading}{0}{1.5}{.5}{2.5}
+\myBoxBlack{3}{0-\yPading}{0}{.3}{.5}{2.5}
+\myBoxGrey{1.1}{0-\yPading}{0}{.05}{.3}{.1}
+\myBoxBlack{4.5}{0-\yPading}{0}{.7}{.5}{2}
+\myBoxBlack{5}{0-\yPading}{0}{.3}{.5}{2}
+\node[text width=4em, text centered] (I-1) at (6,-\yPading) {...};
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%%% DRAW THE INPUT SKELETON
+\pgfmathsetmacro{\yPading}{6}
+\node[text width=4em, text centered] (I-1) at (-2,-\yPading) {Input Skeleton};
+
+
+
+\end{tikzpicture}
+
+
+
+
 \begin{figure}
 	\centering
-	\begin{tikzpicture}
-		\node at (0.5,-0.75){\begin{tabular}{c}input image\end{tabular}};
+	\def\layersep{1.5cm}
+	\begin{tikzpicture}[shorten >=1pt,->,draw=black!50, node distance=\layersep, yscale=1]
+	    \tikzstyle{every pin edge}=[<-,shorten <=1pt]
+	    \tikzstyle{neuron}=[rectangle,fill=black!25,minimum size=17pt,inner sep=0pt, line width=0.1mm, draw=black!55]
+	    \tikzstyle{smallneuron}=[rectangle,fill=black!25,minimum size=10pt,inner sep=0pt, line width=0.1mm, draw=black!55]
+	    \tikzstyle{input}=[rectangle,fill=black!5,minimum size=25pt,inner sep=0pt, line width=0.1mm, draw=black!55]
+	    \tikzstyle{annot} = [text width=4em, text centered]
 
-		\draw (0,0) -- (1,0) -- (1,1) -- (0,1) -- (0,0);
 
-		\node at (3,3.25){\begin{tabular}{c}convolutional layer\\with non-linearities\end{tabular}};
+	    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+	    %%% DRAW THE SQUARES
+	    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	    
+	    \node[input] (I-1) at (0,-1.25) {$x_{i1}$};
 
-		\draw[fill=black,opacity=0.2,draw=black] (2.75,1.25) -- (3.75,1.25) -- (3.75,2.25) -- (2.75,2.25) -- (2.75,1.25);
-		\draw[fill=black,opacity=0.2,draw=black] (2.5,1) -- (3.5,1) -- (3.5,2) -- (2.5,2) -- (2.5,1);
-		\draw[fill=black,opacity=0.2,draw=black] (2.25,0.75) -- (3.25,0.75) -- (3.25,1.75) -- (2.25,1.75) -- (2.25,0.75);
-		\draw[fill=black,opacity=0.2,draw=black] (2,0.5) -- (3,0.5) -- (3,1.5) -- (2,1.5) -- (2,0.5);
-		\draw[fill=black,opacity=0.2,draw=black] (1.75,0.25) -- (2.75,0.25) -- (2.75,1.25) -- (1.75,1.25) -- (1.75,0.25);
-		\draw[fill=black,opacity=0.2,draw=black] (1.5,0) -- (2.5,0) -- (2.5,1) -- (1.5,1) -- (1.5,0);
+	    \foreach \name / \y in {1,...,10}
+	        \path[yshift=0.5cm] node[smallneuron] (H1-\name) at (\layersep+10*0.2cm-\y*0.2cm, -\y*0.3 cm) {};
 
-		\node at (4.5,-0.75){\begin{tabular}{c}subsampling layer\end{tabular}};
+		\foreach \name / \y in {1,...,7}
+	        \path[yshift=1.5cm] node[neuron] (H2-\name) at (\layersep*3+7*0.2cm-\y*0.2cm,-\y*0.3 cm -1.25cm) {};   
 
-		\draw[fill=black,opacity=0.2,draw=black] (5,1.25) -- (5.75,1.25) -- (5.75,2) -- (5,2) -- (5,1.25);
-		\draw[fill=black,opacity=0.2,draw=black] (4.75,1) -- (5.5,1) -- (5.5,1.75) -- (4.75,1.75) -- (4.75,1);
-		\draw[fill=black,opacity=0.2,draw=black] (4.5,0.75) -- (5.25,0.75) -- (5.25,1.5) -- (4.5,1.5) -- (4.5,0.75);
-		\draw[fill=black,opacity=0.2,draw=black] (4.25,0.5) -- (5,0.5) -- (5,1.25) -- (4.25,1.25) -- (4.25,0.5);
-		\draw[fill=black,opacity=0.2,draw=black] (4,0.25) -- (4.75,0.25) -- (4.75,1) -- (4,1) -- (4,0.25);
-		\draw[fill=black,opacity=0.2,draw=black] (3.75,0) -- (4.5,0) -- (4.5,0.75) -- (3.75,0.75) -- (3.75,0);
+       	
+	    \node[neuron,pin={[pin edge={->}]right:$p_{i1}$}, right of=H2-3] (O-1) {};
+	    \node[neuron,pin={[pin edge={->}]right:$p_{i2}$}, right of=H2-5] (O-2) {};
 
-%				\node at (7,3.5){\begin{tabular}{c}convolutional layer\\with non-linearities\\layer $l = 4$\end{tabular}};
-%		
-%				\draw[fill=black,opacity=0.2,draw=black] (7.5,1.75) -- (8.25,1.75) -- (8.25,2.5) -- (7.5,2.5) -- (7.5,1.75);
-%				\draw[fill=black,opacity=0.2,draw=black] (7.25,1.5) -- (8,1.5) -- (8,2.25) -- (7.25,2.25) -- (7.25,1.5);
-%				\draw[fill=black,opacity=0.2,draw=black] (7,1.25) -- (7.75,1.25) -- (7.75,2) -- (7,2) -- (7,1.25);
-%				\draw[fill=black,opacity=0.2,draw=black] (6.75,1) -- (7.5,1) -- (7.5,1.75) -- (6.75,1.75) -- (6.75,1);
-%				\draw[fill=black,opacity=0.2,draw=black] (6.5,0.75) -- (7.25,0.75) -- (7.25,1.5) -- (6.5,1.5) -- (6.5,0.75);
-%				\draw[fill=black,opacity=0.2,draw=black] (6.25,0.5) -- (7,0.5) -- (7,1.25) -- (6.25,1.25) -- (6.25,0.5);
-%				\draw[fill=black,opacity=0.2,draw=black] (6,0.25) -- (6.75,0.25) -- (6.75,1) -- (6,1) -- (6,0.25);
-%				\draw[fill=black,opacity=0.2,draw=black] (5.75,0) -- (6.5,0) -- (6.5,0.75) -- (5.75,0.75) -- (5.75,0);
-%		
-%				\node at (9.5,-1){\begin{tabular}{c}subsampling layer\\layer $l = 6$\end{tabular}};
+	    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+	    %%% DRAW THE PATHS
+	    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	    \foreach \source in {1}
+	        \foreach \dest in {1,...,10}
+	            \path (I-\source) edge (H1-\dest);
 
-%				\draw[fill=black,opacity=0.2,draw=black] (10,1.75) -- (10.5,1.75) -- (10.5,2.25) -- (10,2.25) -- (10,1.75);
-%				\draw[fill=black,opacity=0.2,draw=black] (9.75,1.5) -- (10.25,1.5) -- (10.25,2) -- (9.75,2) -- (9.75,1.5);
-%				\draw[fill=black,opacity=0.2,draw=black] (9.5,1.25) -- (10,1.25) -- (10,1.75) -- (9.5,1.75) -- (9.5,1.25);
-%				\draw[fill=black,opacity=0.2,draw=black] (9.25,1) -- (9.75,1) -- (9.75,1.5) -- (9.25,1.5) -- (9.25,1);
-%				\draw[fill=black,opacity=0.2,draw=black] (9,0.75) -- (9.5,0.75) -- (9.5,1.25) -- (9,1.25) -- (9,0.75);
-%				\draw[fill=black,opacity=0.2,draw=black] (8.75,0.5) -- (9.25,0.5) -- (9.25,1) -- (8.75,1) -- (8.75,0.5);
-%				\draw[fill=black,opacity=0.2,draw=black] (8.5,0.25) -- (9,0.25) -- (9,0.75) -- (8.5,0.75) -- (8.5,0.25);
-%				\draw[fill=black,opacity=0.2,draw=black] (8.25,0) -- (8.75,0) -- (8.75,0.5) -- (8.25,0.5) -- (8.25,0);
+	    \foreach \source in {1,...,10}
+	        \foreach \dest in {1,...,7}
+	            \path (H1-\source) edge (H2-\dest);
 
-		\node at (6.5,1){$\ldots$};
+	    \foreach \source in {1,...,7}
+	    	\foreach \dest in {1,...,2}
+		        \path (H2-\source) edge (O-\dest);
 
-		\node at (8.5,3.25){\begin{tabular}{c}two-layer perceptron\end{tabular}};
-
-		\draw[fill=black,draw=black,opacity=0.5] (6.5,0) -- (7,0) -- (8.5,1.75) -- (8,1.75) -- (6.5,0);
-
-		%\node at (9,-1){\begin{tabular}{c}fully connected layer\\output layer $l = 8$\end{tabular}};
-
-		\draw[fill=black,draw=black,opacity=0.5] (8.5,0.5) -- (9,0.5) -- (9.65,1.25) -- (9.15,1.25) -- (8.5,0.5);
+	    % Annotate the layers
+	    \node[annot,above of=H2-1, node distance=1cm] (hl) {Hidden layer 2};
+	    \node[annot,left of=hl] (hl1) {Hidden layer 1};
+	    \node[annot,left of=hl1] {Input layer};
+	    \node[annot,right of=hl] {Output layer};
 	\end{tikzpicture}
-	\label{fig:traditional-convolutional-network}
+	\caption{Feed-forward neural-network with two hidden layers}
+	\label{fig:feed_forward}
 \end{figure}
-Tadam !
+
+
 
 
 \end{document}
