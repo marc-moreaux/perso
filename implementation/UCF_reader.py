@@ -5,6 +5,7 @@
 import subprocess, re, os
 from PIL import Image
 import numpy as np
+import random
 import matplotlib.pyplot as plt
 import pickle
 
@@ -13,7 +14,13 @@ ffmpeg = 'ffmpeg'
 
 
 
-
+#########################
+###  Usage example
+#########################
+# import UCF_reader
+# a = UCF_reader.UCF_videos()
+# b = a.next_batch(batchSize=1)
+# y = next(b)
 
 
 
@@ -146,33 +153,29 @@ class UCF_videos:
     batch_labels = np.zeros(batchSize, dtype='uint8')
     video_train = [0 for idx in range(batchSize)]
     video_cur_idx = [0 for idx in range(batchSize)]
-    print("OK0")
     for idx in range(batchSize):
       (video_train[idx], batch_labels[idx]) = next(video_gen)
-    print("OK1")
     
     #
     # Generate the following batch to yield
     #
     while(True):
-      print("OK2")
       for idx in range(batchSize):
         # train on following sequence of the video (or...)
         if(len(video_train[idx]) > video_cur_idx[idx]+15): 
-          print("OK3")
           batch_train[idx,:,:,:,:] = video_train[idx][video_cur_idx[idx]:video_cur_idx[idx]+15,:,:,:]
           video_cur_idx[idx] += 10 # train on next 2 seconds
         else:
-          print("OK4")
           # load following video (if greather than 15 frames)
           while True:
             (video_train[idx], batch_labels[idx]) = next(video_gen)
-            print("OK5")
             if len(video_train[idx]) > 15:
               break
           
           video_cur_idx[idx] = 0
           batch_train[idx,:,:,:,:] = video_train[idx][video_cur_idx[idx]:video_cur_idx[idx]+15,:,:,:]
+          batch_train = batch_train / np.max(batch_train)
+          batch_train = batch_train - mean(batch_train)
       # Here is next batch
       yield batch_train, batch_labels
   
@@ -184,99 +187,102 @@ class UCF_videos:
       im.set_data(frame)
     plt.show()
 
-a = UCF_videos()
-# a.extract_video_subset(1)
-b = a.next_batch(batchSize=5)
-y = next(b)
-# a.play_batch(y[0][0])
 
 
-
-
-play(a.dataset[0][0])
-
-
-
-# resize videoName to 320x240 and store in resizedName
-# if succeed return True
-def resize(videoName, resizedName):
-    if not os.path.exists(videoName):
-        print('%s does not exist!' % videoName)
-        return False
-    # call ffmpeg and grab its stderr output
-    p = subprocess.Popen([ffmpeg, "-i", videoName], stderr=subprocess.PIPE)
-    out, err = p.communicate()
-    # search resolution info
-    if err.find('differs from') > -1:
-        return False
-    reso = re.findall(r'Video.*, ([0-9]+)x([0-9]+)', err)
-    if len(reso) < 1:
-        return False
-    # call ffmpeg again to resize
-    subprocess.call([ffmpeg, '-i', videoName, '-s', '320x240', resizedName])
-    return check(resizedName)
-
-# check if the video file is corrupted or not
-def check(videoName):
-    if not os.path.exists(videoName):
-        return False
-    p = subprocess.Popen([ffmpeg, "-i", videoName], stderr=subprocess.PIPE)
-    out, err = p.communicate()
-    if err.find('Invalid') > -1:
-        return False
-    return True
-
-def extract_frame(videoName,frameName):
-    """Doc
-    Extracts the frames from the input video (videoName)
-    and saves them at the location (frameName)
-    """
-    #forces extracted frames to be 320x240 dim.
-    if not os.path.exists(videoName):
-        print('%s does not exist!' % videoName)
-        return False
-    # call ffmpeg and grab its stderr output
-    print('ffmpeg -i %s -r 1 -s qvga --f image2 %s' % (videoName,frameName))
-    p = subprocess.call('ffmpeg -i %s -r 10 %s' % (videoName,frameName), shell=True)
-    return
-
-
-def extract_frames(vidlist,vidDir,outputDir):
-  f = open(vidlist, 'r')
-  vids = f.readlines()
-  f.close()
-  fp = open("out.txt", "w+")
-  vids = [video.rstrip() for video in vids]
-  vids = [line.split(' ')[0] for line in vids]
-  for vid in vids:
-      videoName = os.path.join(vidDir,vid)
-      frameName = os.path.join(outputDir, vid.split('.')[0]+"_%4d.jpeg")
-      newFrameName = ""
-      for piece in (frameName.split("/")[1:-3] + frameName.split("/")[-1:]):
-        newFrameName += "/"+piece 
-      fp.write(newFrameName)
-      fp.write("\n")
-      #extract_frame(videoName,newFrameName)
-  fp.close()
+# a = UCF_videos()
+# # a.extract_video_subset(1)
+# b = a.next_batch(batchSize=5)
+# y = next(b)
+# # a.play_batch(y[0][0])
 
 
 
 
 
-orig_dir = "./UCF-101"
-tmp_frames = "./UFC101_raw/train/tmp"
-
-#playing a video saved in disk
-video_pwd = os.path.join(orig_dir,"v_ApplyEyeMakeup_g01_c03.avi")
-
-pwd = os.path.abspath("./")
-ucf101_path = pwd+"/UCF-101"
-trainlists = pwd+"/ucfTrainTestlist/"
-trainlist01 = os.path.join(trainlists, 'trainlist01.txt')
-testlist01 = os.path.join(trainlists, 'testlist01.txt')
-training_output = pwd+"/UFC-101_raw/train"
-testing_output = pwd+"/UFC-101_raw/test"
+# play(a.dataset[0][0])
 
 
-extract_frames(trainlist01, ucf101_path,training_output)
-extract_frames(testlist01, ucf101_path,testing_output)
+
+# # resize videoName to 320x240 and store in resizedName
+# # if succeed return True
+# def resize(videoName, resizedName):
+#     if not os.path.exists(videoName):
+#         print('%s does not exist!' % videoName)
+#         return False
+#     # call ffmpeg and grab its stderr output
+#     p = subprocess.Popen([ffmpeg, "-i", videoName], stderr=subprocess.PIPE)
+#     out, err = p.communicate()
+#     # search resolution info
+#     if err.find('differs from') > -1:
+#         return False
+#     reso = re.findall(r'Video.*, ([0-9]+)x([0-9]+)', err)
+#     if len(reso) < 1:
+#         return False
+#     # call ffmpeg again to resize
+#     subprocess.call([ffmpeg, '-i', videoName, '-s', '320x240', resizedName])
+#     return check(resizedName)
+
+# # check if the video file is corrupted or not
+# def check(videoName):
+#     if not os.path.exists(videoName):
+#         return False
+#     p = subprocess.Popen([ffmpeg, "-i", videoName], stderr=subprocess.PIPE)
+#     out, err = p.communicate()
+#     if err.find('Invalid') > -1:
+#         return False
+#     return True
+
+# def extract_frame(videoName,frameName):
+#     """Doc
+#     Extracts the frames from the input video (videoName)
+#     and saves them at the location (frameName)
+#     """
+#     #forces extracted frames to be 320x240 dim.
+#     if not os.path.exists(videoName):
+#         print('%s does not exist!' % videoName)
+#         return False
+#     # call ffmpeg and grab its stderr output
+#     print('ffmpeg -i %s -r 1 -s qvga --f image2 %s' % (videoName,frameName))
+#     p = subprocess.call('ffmpeg -i %s -r 10 %s' % (videoName,frameName), shell=True)
+#     return
+
+
+# def extract_frames(vidlist,vidDir,outputDir):
+#   f = open(vidlist, 'r')
+#   vids = f.readlines()
+#   f.close()
+#   fp = open("out.txt", "w+")
+#   vids = [video.rstrip() for video in vids]
+#   vids = [line.split(' ')[0] for line in vids]
+#   for vid in vids:
+#       videoName = os.path.join(vidDir,vid)
+#       frameName = os.path.join(outputDir, vid.split('.')[0]+"_%4d.jpeg")
+#       newFrameName = ""
+#       for piece in (frameName.split("/")[1:-3] + frameName.split("/")[-1:]):
+#         newFrameName += "/"+piece 
+#       fp.write(newFrameName)
+#       fp.write("\n")
+#       #extract_frame(videoName,newFrameName)
+#   fp.close()
+
+
+
+
+
+# orig_dir = "./UCF-101"
+# tmp_frames = "./UFC101_raw/train/tmp"
+
+# #playing a video saved in disk
+# video_pwd = os.path.join(orig_dir,"v_ApplyEyeMakeup_g01_c03.avi")
+
+# pwd = os.path.abspath("./")
+# ucf101_path = pwd+"/UCF-101"
+# trainlists = pwd+"/ucfTrainTestlist/"
+# trainlist01 = os.path.join(trainlists, 'trainlist01.txt')
+# testlist01 = os.path.join(trainlists, 'testlist01.txt')
+# training_output = pwd+"/UFC-101_raw/train"
+# testing_output = pwd+"/UFC-101_raw/test"
+
+
+# extract_frames(trainlist01, ucf101_path,training_output)
+# extract_frames(testlist01, ucf101_path,testing_output)
