@@ -72,7 +72,7 @@ DATA_URL = 'http://download.tensorflow.org/models/image/imagenet/inception-2015-
 
 class NodeLookup(object):
   """Converts integer node ID's to human readable labels."""
-
+  
   def __init__(self,
                label_lookup_path=None,
                uid_lookup_path=None):
@@ -83,14 +83,14 @@ class NodeLookup(object):
       uid_lookup_path = os.path.join(
           FLAGS.model_dir, 'imagenet_synset_to_human_label_map.txt')
     self.node_lookup = self.load(label_lookup_path, uid_lookup_path)
-
+   
   def load(self, label_lookup_path, uid_lookup_path):
     """Loads a human readable English name for each softmax node.
-
+   
     Args:
       label_lookup_path: string UID to integer node ID.
       uid_lookup_path: string UID to human-readable string.
-
+    
     Returns:
       dict from integer node ID to human-readable string.
     """
@@ -98,7 +98,7 @@ class NodeLookup(object):
       tf.logging.fatal('File does not exist %s', uid_lookup_path)
     if not tf.gfile.Exists(label_lookup_path):
       tf.logging.fatal('File does not exist %s', label_lookup_path)
-
+    
     # Loads mapping from string UID to human-readable string
     proto_as_ascii_lines = tf.gfile.GFile(uid_lookup_path).readlines()
     uid_to_human = {}
@@ -108,7 +108,7 @@ class NodeLookup(object):
       uid = parsed_items[0]
       human_string = parsed_items[2]
       uid_to_human[uid] = human_string
-
+    
     # Loads mapping from string UID to integer node ID.
     node_id_to_uid = {}
     proto_as_ascii = tf.gfile.GFile(label_lookup_path).readlines()
@@ -118,7 +118,7 @@ class NodeLookup(object):
       if line.startswith('  target_class_string:'):
         target_class_string = line.split(': ')[1]
         node_id_to_uid[target_class] = target_class_string[1:-2]
-
+    
     # Loads the final mapping of integer node ID to human-readable string
     node_id_to_name = {}
     for key, val in node_id_to_uid.items():
@@ -126,9 +126,9 @@ class NodeLookup(object):
         tf.logging.fatal('Failed to locate: %s', val)
       name = uid_to_human[val]
       node_id_to_name[key] = name
-
+   
     return node_id_to_name
-
+   
   def id_to_string(self, node_id):
     if node_id not in self.node_lookup:
       return ''
@@ -148,17 +148,17 @@ def create_graph():
 
 def run_inference_on_image(images):
   """Runs inference on an image.
-
+  
   Args:
     image: Image file name.
-
+  
   Returns:
     Nothing
   """
   # Creates graph from saved GraphDef.
   create_graph()
-
-
+  
+  
   with tf.Session() as sess:
     # Some useful tensors:
     # 'softmax:0': A tensor containing the normalized prediction across
@@ -179,10 +179,10 @@ def run_inference_on_image(images):
                              {'DecodeJpeg/contents:0': image_data})
       predictions = np.squeeze(predictions)
       allPredictions.append((image, predictions))
-
+      
       # Creates node ID --> English string lookup.
       node_lookup = NodeLookup()
-
+      
       top_k = predictions.argsort()[-FLAGS.num_top_predictions:][::-1]
       for node_id in top_k:
         human_string = node_lookup.id_to_string(node_id)
@@ -211,35 +211,35 @@ def maybe_download_and_extract():
   tarfile.open(filepath, 'r:gz').extractall(dest_directory)
 
 allPredictions = []
-def main(_):
+def main():
   maybe_download_and_extract()
   image = (FLAGS.image_file if FLAGS.image_file else
            os.path.join(FLAGS.model_dir, 'cropped_panda.jpg'))
-
-
+  
+  
   pngPath = "/home/mmoreaux/work/perso/implementation/images_test"
   img_paths = [f for f in os.listdir(pngPath) 
                  if os.path.isfile(os.path.join(pngPath, f))]
   img_paths = [os.path.join(pngPath, f) for f in img_paths]
-
-
+  
+  
   run_inference_on_image(img_paths)
 
 
 
 if __name__ == '__main__':
-  tf.app.run()
+  main()
 
 
-node_lookup = NodeLookup()
-print(node_lookup.id_to_string(996),[pred[996] for pred in allPredictions[1]])
-print(node_lookup.id_to_string(859),[pred[859] for pred in allPredictions[1]])
+# node_lookup = NodeLookup()
+# print(node_lookup.id_to_string(996),[pred[996] for pred in allPredictions[1]])
+# print(node_lookup.id_to_string(859),[pred[859] for pred in allPredictions[1]])
 
 
-print([i for i in range(1000) if "mobile phone" in node_lookup.id_to_string(i)])
+# print([i for i in range(1000) if "mobile phone" in node_lookup.id_to_string(i)])
 
 
-file = open("tf_inception_adapted.txt", "w")
+file = open("tf_inception_adapted2.txt", "w+")
 for item in allPredictions:
   file.write(item[0])
   if item[1][996] > .01:

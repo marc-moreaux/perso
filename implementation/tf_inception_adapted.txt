@@ -1,0 +1,29 @@
+/home/mmoreaux/work/perso/implementation/images_test/frame0158.jpg
+/home/mmoreaux/work/perso/implementation/images_test/frame0368.jpg
+/home/mmoreaux/work/perso/implementation/images_test/frame0587.jpg
+/home/mmoreaux/work/perso/implementation/images_test/frame0703.jpg, coffee mug : 0.0152602, book : 0.0105982
+/home/mmoreaux/work/perso/implementation/images_test/frame0903.jpg
+/home/mmoreaux/work/perso/implementation/images_test/frame0960.jpg
+/home/mmoreaux/work/perso/implementation/images_test/frame1021.jpg
+/home/mmoreaux/work/perso/implementation/images_test/mug1.jpg, coffee mug : 0.223987, book : 0.0105004
+/home/mmoreaux/work/perso/implementation/images_test/mug10.jpg
+/home/mmoreaux/work/perso/implementation/images_test/mug11.jpg, coffee mug : 0.0159564, cup : 0.018974, book : 0.0460426
+/home/mmoreaux/work/perso/implementation/images_test/mug12.jpg
+/home/mmoreaux/work/perso/implementation/images_test/mug13.jpg, coffee mug : 0.0127789, book : 0.0119855
+/home/mmoreaux/work/perso/implementation/images_test/mug14.jpg
+/home/mmoreaux/work/perso/implementation/images_test/mug15.jpg, cup : 0.0143106
+/home/mmoreaux/work/perso/implementation/images_test/mug16.jpg
+/home/mmoreaux/work/perso/implementation/images_test/mug17.jpg
+/home/mmoreaux/work/perso/implementation/images_test/mug18.jpg, coffee mug : 0.959026, book : 0.0168296
+/home/mmoreaux/work/perso/implementation/images_test/mug19.jpg, coffee mug : 0.0174181, book : 0.12763
+/home/mmoreaux/work/perso/implementation/images_test/mug2.jpg, coffee mug : 0.0104916, book : 0.015537
+/home/mmoreaux/work/perso/implementation/images_test/mug20.jpg
+/home/mmoreaux/work/perso/implementation/images_test/mug21.jpg, coffee mug : 0.528783, book : 0.276256
+/home/mmoreaux/work/perso/implementation/images_test/mug3.jpg
+/home/mmoreaux/work/perso/implementation/images_test/mug4.jpg, cup : 0.128525
+/home/mmoreaux/work/perso/implementation/images_test/mug5.jpg
+/home/mmoreaux/work/perso/implementation/images_test/mug6.jpg, cup : 0.433345
+/home/mmoreaux/work/perso/implementation/images_test/mug7.jpg, coffee mug : 0.0160898
+/home/mmoreaux/work/perso/implementation/images_test/mug8.jpg
+/home/mmoreaux/work/perso/implementation/images_test/mug9.jpg, coffee mug : 0.605893, book : 0.124583
+/home/mmoreaux/work/perso/implementation/images_test/mug_test.jpg

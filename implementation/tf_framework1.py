@@ -7,40 +7,44 @@ import time
 import scipy
 from PIL import Image
 import tensorflow as tf
+
+# own stuff
 import tf_alexnet2
 import tf_lstm
+import UCF_reader
 
 
-img = Image.open("/home/mmoreaux/work/perso/implementation/images_test/IMG_20160420_164136.jpg")
-img = img.resize([227,227], Image.ANTIALIAS)
-
+# img = Image.open("/home/mmoreaux/work/perso/implementation/images_test/IMG_20160420_164136.jpg")
+# img = img.resize([227,227], Image.ANTIALIAS)
 
 
 graph = tf.Graph()
 
 # Initalize alexnet & LSTM
 mAlexnet = tf_alexnet2.Alexnet()
-mLSTMs   = tf_lstm.MY_LSTM()
+mLSTMs = tf_lstm.MY_LSTM()
 
 
 with graph.as_default():
   mAlexnet.get_graph()
-  mLSTMs.get_graph()
+  mLSTMs.get_graph(mAlexnet.fc6)
 
 
-with tf.Session(graph=graph) as session:
-  tf.initialize_all_variables().run()
+# with tf.Session(graph=graph) as session:
+#   tf.initialize_all_variables().run()
   
-  image = np.zeros((1, 227,227,3)).astype(np.float32)
-  image[0,:,:,:] = img
-  feed_dict = {mAlexnet.mInput: image}
-  output = session.run(mAlexnet.prob, feed_dict=feed_dict)
-  
-  print("coffee:",output[0,504]," cup",output[0,968]," phone",output[0,487])
-  
+#   image = np.zeros((1, 227,227,3)).astype(np.float32)
+#   image[0,:,:,:] = img
+#   label = np.zeros((1,101))
+#   label[0,10] = 1
+#   feed_dict = {mAlexnet.mInput: image, mLSTMs.train_labels: label}
+#   output = session.run(mLSTMs.myVar, feed_dict=feed_dict)
+#   print(output)
 
 
-
+mUCFVideos = UCF_reader.UCF_videos()
+batchGenerator = mUCFVideos.next_batch(batchSize=1)
+# y = next(b)
 
 
 with tf.Session(graph=graph) as session:
@@ -48,10 +52,9 @@ with tf.Session(graph=graph) as session:
   print('Initialized')
   mean_loss = 0
   for step in range(num_steps):
-    batches = train_batches.next()
+    batch = next(batchGenerator)
     feed_dict = dict()
-    for i in range(num_unrollings + 1):
-      feed_dict[train_data[i]] = batches[i]
+    feed_dict[train_data] = batch
     _, l, predictions, lr = session.run([optimizer, loss, train_prediction, learning_rate], feed_dict=feed_dict)
     mean_loss += l
     if step % summary_frequency == 0:

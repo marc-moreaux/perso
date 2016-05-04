@@ -1,0 +1,23 @@
+1  /home/mmoreaux/work/perso/implementation/images_test/IMG_20160420_164130.jpg, coffee mug : 0.418198
+1  /home/mmoreaux/work/perso/implementation/images_test/IMG_20160420_164136.jpg, coffee mug : 0.0192746
+1  /home/mmoreaux/work/perso/implementation/images_test/IMG_20160420_164143.jpg, coffee mug : 0.0454284
+1  /home/mmoreaux/work/perso/implementation/images_test/IMG_20160420_164148.jpg, coffee mug : 0.0929278, cup : 0.0182007,   book : 0.0195455
+1  /home/mmoreaux/work/perso/implementation/images_test/IMG_20160420_164208.jpg, coffee mug : 0.223004, book : 0.0396298
+1  /home/mmoreaux/work/perso/implementation/images_test/IMG_20160420_164219.jpg, coffee mug : 0.27514
+1  /home/mmoreaux/work/perso/implementation/images_test/IMG_20160420_164250.jpg, cup : 0.0606799
+1  /home/mmoreaux/work/perso/implementation/images_test/IMG_20160420_164335.jpg, coffee mug : 0.0107909
+1  /home/mmoreaux/work/perso/implementation/images_test/IMG_20160420_164421.jpg, coffee mug : 0.0120606
+1  /home/mmoreaux/work/perso/implementation/images_test/IMG_20160420_164341.jpg, coffee mug : 0.722292, book : 0.113846
+1  /home/mmoreaux/work/perso/implementation/images_test/IMG_20160420_164344.jpg, coffee mug : 0.660962, book : 0.105366
+
+
+1  /home/mmoreaux/work/perso/implementation/images_test/IMG_20160420_164303.jpg
+1  /home/mmoreaux/work/perso/implementation/images_test/IMG_20160420_164308.jpg
+
+
+0  /home/mmoreaux/work/perso/implementation/images_test/IMG_20160420_164526.jpg, cup : 0.0270232
+0  /home/mmoreaux/work/perso/implementation/images_test/IMG_20160420_164528.jpg, cup : 0.0153863
+0  /home/mmoreaux/work/perso/implementation/images_test/IMG_20160420_165033.jpg, cup : 0.0155421
+
+.8 /home/mmoreaux/work/perso/implementation/images_test/IMG_20160420_164226.jpg
+.8 /home/mmoreaux/work/perso/implementation/images_test/IMG_20160420_164347.jpg
