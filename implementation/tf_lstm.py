@@ -83,52 +83,49 @@ class MY_LSTM:
     
     # Optimizer.
     global_step = tf.Variable(0)
-    learning_rate = tf.train.exponential_decay(
-      10.0, global_step, 5000, 0.1, staircase=True)
-    optimizer = tf.train.GradientDescentOptimizer(learning_rate)
-    gradients, v = zip(*optimizer.compute_gradients(self.loss))
+    self.learning_rate = tf.train.exponential_decay(
+      50.0, global_step, 5000, 0.1, staircase=True)
+    self.optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
+    gradients, v = zip(*self.optimizer.compute_gradients(self.loss))
     gradients, _ = tf.clip_by_global_norm(gradients, 1.25)
-    optimizer = optimizer.apply_gradients(
+    self.optimizer = self.optimizer.apply_gradients(
       zip(gradients, v), global_step=global_step)
     
 
 
 
 
-
-from PIL import Image
-import tf_alexnet2
-
-img = Image.open("/home/mmoreaux/work/perso/implementation/images_test/IMG_20160420_164136.jpg")
-img = img.resize([227,227], Image.ANTIALIAS)
-
-
-
-graph = tf.Graph()
-
-# Initalize alexnet & LSTM
-mAlexnet = tf_alexnet2.Alexnet()
-mLSTMs = MY_LSTM()
-
-
-with graph.as_default():
-  mAlexnet.get_graph()
-  mLSTMs.get_graph(mAlexnet.fc6)
-
-
-with tf.Session(graph=graph) as session:
-  tf.initialize_all_variables().run()
+if __name__ == '__main__':
+  from PIL import Image
+  import tf_alexnet2
   
-  image = np.zeros((1, 227,227,3)).astype(np.float32)
-  image[0,:,:,:] = img
-  image = image-np.mean(image)
-  label = np.zeros((1,101))
-  label[0,10] = 1
-  feed_dict = {mAlexnet.mInput: image, mLSTMs.train_labels: label}
-  # output = session.run(mAlexnet.prob, feed_dict=feed_dict)
-  output = session.run(mLSTMs.myVar, feed_dict=feed_dict)
-  print(output)
-  print(np.max(output))
+  img = Image.open("/home/mmoreaux/work/perso/implementation/images_test/IMG_20160420_164136.jpg")
+  img = img.resize([227,227], Image.ANTIALIAS)
   
+  graph = tf.Graph()
+  
+  # Initalize alexnet & LSTM
+  mAlexnet = tf_alexnet2.Alexnet()
+  mLSTMs = MY_LSTM()
+  
+  with graph.as_default():
+    mAlexnet.get_graph()
+    mLSTMs.get_graph(mAlexnet.fc6)
+  
+  
+  with tf.Session(graph=graph) as session:
+    tf.initialize_all_variables().run()
+    
+    image = np.zeros((1, 227,227,3)).astype(np.float32)
+    image[0,:,:,:] = img
+    image = image-np.mean(image)
+    label = np.zeros((1,101))
+    label[0,10] = 1
+    feed_dict = {mAlexnet.mInput: image, mLSTMs.train_labels: label}
+    output = session.run(mAlexnet.prob, feed_dict=feed_dict)
+    # output = session.run(mLSTMs.myVar, feed_dict=feed_dict)
+    print(output)
+    print(np.max(output))
+    
 
 

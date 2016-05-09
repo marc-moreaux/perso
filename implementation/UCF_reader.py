@@ -6,7 +6,7 @@ import subprocess, re, os
 from PIL import Image
 import numpy as np
 import random
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import pickle
 
 # provide your own ffmpeg here
@@ -93,11 +93,11 @@ class UCF_videos:
     for idx,(vid,vidclass) in enumerate(zip(vidFiles,vidClass)):
       # Extract every videos with ffmpeg
       # call ffmpeg and grab its stderr output
-      # forces extracted frames to be 277*277 dim.
+      # forces extracted frames to be 227*227 dim.
       if not os.path.exists(vid):
         print('%s does not exist!' % vid)
         return False
-      p = subprocess.call('ffmpeg -i %s -s 277*277 -r %d /tmp/tmp%%4d.jpg' % (vid,framerate), shell=True)
+      p = subprocess.call('ffmpeg -i %s -s 227*227 -r %d /tmp/tmp%%4d.jpg' % (vid,framerate), shell=True)
             
       # transorm images into numpy arrays
       frames_p = [f for f in os.listdir("/tmp") if ("tmp" in f and ".jpg" in f)]
@@ -113,7 +113,7 @@ class UCF_videos:
       self.dataset.append((npFrames,vidclass))
       
       #
-      # Save the dataset every 10 videos
+      # Save the dataset every 2 videos
       #
       print(idx)
       if idx % 2 == 0:
@@ -133,7 +133,11 @@ class UCF_videos:
         self.shuffledIdx = list(range(len(allPkl)))
         random.shuffle(self.shuffledIdx)
       
-      (video1, video2) = self.load_ds( self.path_of_pkl(1,self.shuffledIdx.pop()) )
+      while True:
+        loaded_file = self.load_ds( self.path_of_pkl(1,self.shuffledIdx.pop()) )
+        if len(loaded_file) == 2 :
+          (video1, video2) = loaded_file
+          break
       
       yield (video1[0], int(video1[1]))
       yield (video2[0], int(video2[1]))
@@ -149,7 +153,7 @@ class UCF_videos:
     #  set <batch_labels> to their proper values
     #
     video_gen = self.next_random_video(1)
-    batch_train = np.ndarray((batchSize,15,277,277,3))
+    batch_train = np.ndarray((batchSize,15,227,227,3))
     batch_labels = np.zeros(batchSize, dtype='uint8')
     video_train = [0 for idx in range(batchSize)]
     video_cur_idx = [0 for idx in range(batchSize)]
@@ -175,22 +179,22 @@ class UCF_videos:
           video_cur_idx[idx] = 0
           batch_train[idx,:,:,:,:] = video_train[idx][video_cur_idx[idx]:video_cur_idx[idx]+15,:,:,:]
           batch_train = batch_train / np.max(batch_train)
-          batch_train = batch_train - mean(batch_train)
+          batch_train = batch_train - np.mean(batch_train)
       # Here is next batch
       yield batch_train, batch_labels
   
-  def play_batch(self, npVideoFrames, framerate=5):
-    self.framerate = 5
-    im = plt.imshow(npVideoFrames[0])
-    for (idx,frame) in enumerate(npVideoFrames):
-      plt.pause(1/self.framerate)
-      im.set_data(frame)
-    plt.show()
+#  def play_batch(self, npVideoFrames, framerate=5):
+#    self.framerate = 5
+#    im = plt.imshow(npVideoFrames[0])
+#    for (idx,frame) in enumerate(npVideoFrames):
+#     plt.pause(1/self.framerate)
+#     im.set_data(frame)
+#   plt.show()
 
 
 
 # a = UCF_videos()
-# # a.extract_video_subset(1)
+# a.extract_video_subset(1)
 # b = a.next_batch(batchSize=5)
 # y = next(b)
 # # a.play_batch(y[0][0])
