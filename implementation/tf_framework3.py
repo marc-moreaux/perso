@@ -11,43 +11,22 @@ import tensorflow as tf
 # own stuff
 import tf_alexnet2
 import tf_lstm
-import UCF_reader
+import KTH_reader
 
 
-# img = Image.open("/home/mmoreaux/work/perso/implementation/images_test/IMG_20160420_164136.jpg")
-# img = img.resize([227,227], Image.ANTIALIAS)
+
+# Initalize alexnet, LSTM & batches
+mAlexnet = tf_alexnet2.Alexnet(10)
+mLSTMs = tf_lstm.MY_LSTM()
+mKTH = KTH_reader.KTH_videos()
+batch_gen = mKTH.train_batch_generator(batch_size=20)
+
 
 
 graph = tf.Graph()
-
-# Initalize alexnet & LSTM
-mAlexnet = tf_alexnet2.Alexnet()
-mLSTMs = tf_lstm.MY_LSTM()
-
-
 with graph.as_default():
   mAlexnet.get_graph()
-  mLSTMs.get_graph(mAlexnet.fc6)
-
-
-# with tf.Session(graph=graph) as session:
-#   tf.initialize_all_variables().run()
-  
-#   image = np.zeros((1, 227,227,3)).astype(np.float32)
-#   image[0,:,:,:] = img
-#   label = np.zeros((1,101))
-#   label[0,10] = 1
-#   feed_dict = {mAlexnet.mInput: image, mLSTMs.train_labels: label}
-#   output = session.run(mLSTMs.myVar, feed_dict=feed_dict)
-#   print(output)
-
-
-mUCFVideos = UCF_reader.UCF_videos()
-batchGenerator = mUCFVideos.next_batch(batchSize=1)
-
-# y = next(b)
-
-
+  # mLSTMs.get_graph(mAlexnet.fc6)
 
 
 
@@ -78,7 +57,7 @@ def print_training_info(cumulated_loss, step, lr, batches, predictions):
 
 
 
-
+batch_gen = mKTH.train_batch_generator(batch_size=20)
 num_steps = 150000
 
 with tf.Session(graph=graph) as session:
@@ -89,17 +68,20 @@ with tf.Session(graph=graph) as session:
     ########################################
     ###  Create input variables to network
     ########################################
-    batch = next(batchGenerator)
+    batch = next(batch_gen)
     feed_dict = dict()
-    feed_dict[mAlexnet.mInput] = batch[0][0][0:1]
+    feed_dict[mAlexnet.mInput] = batch[0][0][0:10]
     label_vec = np.zeros((1,101))
-    label_vec[0,batch[1]-1] = 1
-    feed_dict[mLSTMs.train_labels] = label_vec
+    label_vec[0,batch[1][0][2]-1] = 1
+    # feed_dict[mLSTMs.train_labels] = label_vec
     
     ########################################
     ###  Run predictions 
     ### & print debug info every 1000 steps
     ########################################
+    out = session.run(mAlexnet.fc6, feed_dict=feed_dict)
+    print(out)
+    
     _, l, predictions, lr = session.run([mLSTMs.optimizer, mLSTMs.loss, mLSTMs.train_prediction, mLSTMs.learning_rate], feed_dict=feed_dict)
     cumulated_loss += l
     if step % 500 == 0 :#&& step > 0:

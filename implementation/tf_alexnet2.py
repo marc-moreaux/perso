@@ -3,15 +3,40 @@ import tensorflow as tf
 
 
 
+
+def conv(mInput, kernel, biases, k_h, k_w, c_o, s_h, s_w,  padding="VALID", group=1):
+  '''From https://github.com/ethereon/caffe-tensorflow
+  '''
+  c_i = mInput.get_shape()[-1]
+  assert c_i%group==0
+  assert c_o%group==0
+  convolve = lambda i, k: tf.nn.conv2d(i, k, [1, s_h, s_w, 1], padding=padding)
+  
+  if group==1:
+      conv = convolve(mInput, kernel)
+  else:
+      input_groups = tf.split(3, group, mInput)
+      kernel_groups = tf.split(3, group, kernel)
+      output_groups = [convolve(i, k) for i,k in zip(input_groups, kernel_groups)]
+      conv = tf.concat(3, output_groups)
+  return  tf.reshape(tf.nn.bias_add(conv, biases), conv.get_shape().as_list())
+
+
+
 class Alexnet(object):
-  def __init__(self):
+  def __init__(self, batch_size=1) :
     self.net_data = np.load("bvlc_alexnet.npy", encoding="bytes").item()
+    self.batch_size = batch_size
 
   def get_graph(self):
     # x = tf.Variable(i)
     net_data = self.net_data
-    mInput = tf.placeholder(tf.float32, shape=(1, 227, 227, 3))
 
+    # Network's input
+    mInput = tf.placeholder(tf.float32, shape=(self.batch_size, 227, 227, 3))
+
+
+    # Network's convolutional variables
     conv1W = tf.Variable(net_data["conv1"][0], trainable=False)
     conv1b = tf.Variable(net_data["conv1"][1], trainable=False)
     conv2W = tf.Variable(net_data["conv2"][0], trainable=False)
@@ -23,6 +48,7 @@ class Alexnet(object):
     conv5W = tf.Variable(net_data["conv5"][0], trainable=False)
     conv5b = tf.Variable(net_data["conv5"][1], trainable=False)
 
+    # Network's fc variables
     fc6W = tf.Variable(net_data["fc6"][0], trainable=False)
     fc6b = tf.Variable(net_data["fc6"][1], trainable=False)
     fc7W = tf.Variable(net_data["fc7"][0], trainable=False)
@@ -85,7 +111,7 @@ class Alexnet(object):
     maxpool5 = tf.nn.max_pool(conv5, ksize=[1, k_h, k_w, 1], strides=[1, s_h, s_w, 1], padding=padding)
 
     #fc6 - fc(4096, name='fc6')
-    fc6 = tf.nn.relu_layer(tf.reshape(maxpool5, [1, int(np.prod(maxpool5.get_shape()[1:]))]), fc6W, fc6b)
+    fc6 = tf.nn.relu_layer(tf.reshape(maxpool5, [self.batch_size, int(np.prod(maxpool5.get_shape()[1:]))]), fc6W, fc6b)
 
     #fc7 - fc(4096, name='fc7')
     fc7 = tf.nn.relu_layer(fc6, fc7W, fc7b)
@@ -102,23 +128,6 @@ class Alexnet(object):
     self.fc8  = fc8
     self.prob = prob
 
-
-def conv(mInput, kernel, biases, k_h, k_w, c_o, s_h, s_w,  padding="VALID", group=1):
-  '''From https://github.com/ethereon/caffe-tensorflow
-  '''
-  c_i = mInput.get_shape()[-1]
-  assert c_i%group==0
-  assert c_o%group==0
-  convolve = lambda i, k: tf.nn.conv2d(i, k, [1, s_h, s_w, 1], padding=padding)
-  
-  if group==1:
-      conv = convolve(mInput, kernel)
-  else:
-      input_groups = tf.split(3, group, mInput)
-      kernel_groups = tf.split(3, group, kernel)
-      output_groups = [convolve(i, k) for i,k in zip(input_groups, kernel_groups)]
-      conv = tf.concat(3, output_groups)
-  return  tf.reshape(tf.nn.bias_add(conv, biases), conv.get_shape().as_list())
 
 
 

@@ -84,7 +84,7 @@ class MY_LSTM:
     # Optimizer.
     global_step = tf.Variable(0)
     self.learning_rate = tf.train.exponential_decay(
-      50.0, global_step, 5000, 0.1, staircase=True)
+      50.0, global_step, 5000, 0.8, staircase=True)
     self.optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
     gradients, v = zip(*self.optimizer.compute_gradients(self.loss))
     gradients, _ = tf.clip_by_global_norm(gradients, 1.25)
@@ -92,6 +92,58 @@ class MY_LSTM:
       zip(gradients, v), global_step=global_step)
     
 
+
+
+
+  def get_graph2(self, tensor_input=0):
+    ''' Return the LSTM composed by <nbCells> and given the tf input <tensor_input>'''
+    # Define variables 
+    # - Weights & bias on cells
+    self.wCells = tf.Variable(tf.truncated_normal([self.nbInputs+self.nbCells, self.nbCells*4], -0.1, 0.1))
+    self.bCells = tf.Variable(tf.zeros([1, self.nbCells*4]))
+    # - Memory of previous cell's values
+    saved_output = tf.Variable(tf.truncated_normal([self.batchSize, self.nbCells], -0.1, 0.1), trainable=False)
+    saved_state  = tf.Variable(tf.truncated_normal([self.batchSize, self.nbCells], -0.1, 0.1), trainable=False)
+    # - Output classifier
+    wClassif = tf.Variable(tf.truncated_normal([self.nbCells, self.nbOutputs], -0.1, 0.1))
+    bClassif = tf.Variable(tf.zeros([self.nbOutputs]))
+    # - Label placeholder
+    self.train_labels = tf.placeholder(tf.float32, shape=[1,self.nbOutputs])
+    # - LSTM unrolling's placeholder
+    LSTM_inputs = list()
+    for _ in range(self.nbFrames):
+      LSTM_inputs.append(
+        tf.placeholder(tf.float32, shape=[self.batchSize,self.nbInputs]))
+    
+    
+    # Propagate all the images into the LSTM cells
+    outputs = list()
+    for i in LSTM_inputs:
+      saved_output, saved_state = lstm_cell(i, saved_output, saved_state)
+      outputs.append(saved_output)
+    # Outputs list to tf_variable
+    outputs = tf.concat(0, outputs)
+
+    # Classifier.
+    
+    self.logits = tf.nn.xw_plus_b(saved_output, wClassif, bClassif)
+    self.loss = tf.reduce_mean(
+      tf.nn.softmax_cross_entropy_with_logits(
+        self.logits, self.train_labels))
+    
+    # Predictions.
+    self.train_prediction = tf.nn.softmax(self.logits)
+    
+    # Optimizer.
+    global_step = tf.Variable(0)
+    self.learning_rate = tf.train.exponential_decay(
+      50.0, global_step, 5000, 0.8, staircase=True)
+    self.optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
+    gradients, v = zip(*self.optimizer.compute_gradients(self.loss))
+    gradients, _ = tf.clip_by_global_norm(gradients, 1.25)
+    self.optimizer = self.optimizer.apply_gradients(
+      zip(gradients, v), global_step=global_step)
+    
 
 
 
