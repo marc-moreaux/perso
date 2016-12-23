@@ -1,0 +1,24 @@
+\chapter{Saliency Through Deep Nets} % (fold)
+\label{sec:saliency_through_deep_nets}
+	
+	In this paper, we want to emphasize the use CAM layers for their saliency and localisation properties.
+	The network we use is therefore a variant to the original network zhou2015learning. In the original paper, the authors introduce a combination of Global Average Pooling, followed by a weighted average and a sotfmax to classify their images. Here, we investigate the use of Global Average Pooling directly followed by a softmax function to classify our data. With this structure, this new network should capure further informations on spatial relations that the original could not grasp.
+
+	\subsection{Methodology} % (fold)
+	\label{sub:methodology}
+
+		Deploy a VGG16 with CAM 
+		Deploy a VGG16 with CCN + regularizer + multiple CCN sizes
+		Compare each of them on pascal VOC
+
+	\subsection{Results:} % (fold)
+	\label{sub:results_}
+		
+		\begin{itemize}
+			\item The detector is position agnostic (Vs FCNN) from training to testing.
+			\item Can be use with variable image shapes.
+			\item May be use for "one shot" learning of given classes.
+		\end{itemize}
+
+	A general comment we can make on both the original model and ours, is that both of the models are training-position-agnostic. What we mean here is that both networks can generalize the concept of an object independently of their position in the training set. If we consider a classification task where the network has to classify shoes against many other other classes, and a set of images randomly chosen from the web, it's very likely that all the images display these shoes at the bottom of the image.\\
+	The learned distribution (by the network), and a-priori would be fine, if we were to test our networks on the same type of dataset (randomly chosen from the web) but could present weaknesses if we were to test this network on a dataset without this probability distribution (eg: pictures grabed from a mobile platform, like a humanoid robot, or a fying drone).

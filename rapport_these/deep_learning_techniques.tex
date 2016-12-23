@@ -1,0 +1,15 @@
+\chapter{Deep Learning Techniques} % (fold)
+\label{sec:deep_learning_techniques}
+
+% section deep_learning_techniques (end)
+
+
+In the deep learning field, there is a large amount of techniques available to train our networks. These techniques often come with parameters to set. In the following section we are going to see different techniques used to train the networks and the impact of their parameters.
+
+\section{Batch Normalization} % (fold)
+\label{sec:batch_normalization}
+	
+	Batch normalization \cite{ioffe2015batch} was introduced in 2015. 
+	The intended outcome of this technique is to favor the back propagation of the gradients. 
+	The intuition behind this technique is to avoid plateauing regions of non-linear activation functions by re-centering the inputs to these functions. 
+	In order to get the best out of this technique, one should set two parameters. The first one is the size of the batch and the second one is the learning rate. In their paper, Ioffe et al. demonstrate how the learning rate could be increased to speed-up the convergence of their training example, without diverging.
