@@ -92,6 +92,7 @@
 			\textbf{Con-nets :}
 			Earlier, we mentioned the Conv-FC and the Conv-CAM, most of the times, the convolutional part of these network is as follow :
 			\begin{itemize}
+				\setlength\itemsep{-0.5em}
 				\item conv1\_1 $[3*3*1*16]$ \footnote{[filter height, filter width, input channels, output channels]}
 				\item conv1\_2 $[3*3*16*16]$
 				\item max-pool
@@ -102,28 +103,46 @@
 			\end{itemize}
 			\textbf{Learning parameters :} When not mentioned, we understand that the learning rate of the network is $0.005$, and the optimizer is the default Tensorflow implementation of "RMSprop".
 
-			\textbf{visualization :} To visualize our results, we use randomly chose a digit and create 64 images with the digit at 64 different positions (in the 100\*100 image)\footnote{(5,5)(5,10)(5,15)(5,20)...(10,5)(10,10)(10,15)...(40,40)}. We will refer to this visualization as the multiPos graph.
+			\textbf{visualization :} To visualize our results, we use randomly chose a digit and create 64 images with the digit at 64 different positions (in the 100\*100 image)\footnote{(5,5)(5,10)(5,15)(5,20)...(10,5)(10,10)(10,15)...(40,40)}. We then compute the negative-log-likelihood of each of those images and plot the pre-softmax value of each of them (which lead to values unconstrained between [0,1]). This value is also called the "activation" of the neuron before the softmax. We will refer to this visualization as the multiPos graph. (We acknowledge in this parenthesis the lack of methodology due to the selection of a random digit which should have been fixed for proper comparisons of models...).
 
 			\subsubsection{Conv-FC} 
 			\label{ssub:conv_fc}
-				The conv-FC network has the convolutional structure aforementioned with a single fully-connected layer on top.
-				After 10 epochs, the classifier can recognize the top left digits with 98.88\% accuracy on the TSAT but can't recognize digits randomly placed on an image : the TSWRP accuracy is 11.23\%. On the multiPos graph, we see that the digit "6" is never recognized on the 64 images but when the digit was positioned at (10,10).
+				The conv-FC network has the convolutional structure aforementioned with a single fully-connected layer on top (fc1 is [252516, 512]\footnote{[input dimension, out dimension]}).
+				After 10 epochs, the classifier can recognize the top left digits with $98.88\%$ accuracy on the TSAT but can't recognize digits randomly placed on an image : the TSWRP accuracy is $11.23\%$. On the multiPos graph, we see that the digit "6" is never recognized on the 64 images but when the digit was positioned at (10,10).
 				It's straight forward that this model couldn't generalize the position of a digit.
 
 			\subsubsection{Conv-CAM}
 			\label{ssub:conv_cam}
-				The Conv-CAM net has the convolutional structure aforementioned followed by a CAM layer directly connected the softmax layer. 
-				After 10 epochs, the accuracy on TSAT is $97.3\%$ and $97.24\%$ on TSWRP. We also see from the multiPose graph a that the randomly generated digit was recognized at every positions.
+				The Conv-CAM net has the convolutional structure aforementioned followed by an extra convolutional layer (conv3\_2 is $[3*3*16*10]$) which is followed by a GAP and directly connected the softmax layer.
+				After 10 epochs, the accuracy on TSAT is $97.30\%$ and $97.24\%$ on TSWRP. We directly see a gap in between this method and the previous one. On the one hand, the model is now able to recognize a digit randomly positioned on the background, but on the other hand, the model is $1.33$ points less accurate than the previous at recognizing our digits on the TSAT. The following model will be aimed at overcoming this issue\ref{ssub:conv_cam2}.
+
+				Coming back on the accuracy of this model at generalizing the position of a digit (on TSWRP), we see analyze its multiPose graph \fref{fig:multipose_graph_1} and notice the randomly generated digit was recognized at every positions. We also notice an activation variation (shaped as a sawtooth) depending on the position of the digit and hypothesize this changes to be caused by the shape reduction caused by the pooling layers\ref{sub:conv_nopool_l1cam}.
+
+			\subsubsection{Conv-CAM2}
+			\label{ssub:conv_cam2}
+				Conv-CAM2 have the same structure as Conv-CAM but the conv3\_2 layer which has twice as much output units as Conv-CAM (conv3\_2 is $[3*3*16*20]$). Before the softmax layer, we mean those 10 pairs of neurons and given to the softmax layer. The key concept is to double the amount of output units such that each class is supported by 2 neurons. This should increase the amount of representations a digit can have (in other words, to increase its discriminant factor).
+				Using such network, the accuracy on TSAT raises to $98.96\%$ and $98.97\%$ on TSWRP. The TSAT and TSWRP accuracies are therefore better with Conv-CAM2 than with the reference model Conv-FC on both datasets. To be honest I didn't check if this accuracy increase was "statistically significant" (check this... + comment on non proof of convergence, e.g. fixed amount of epochs).
+				As the previous model (Conv-CAM), we can still see the sawtooth shaped activations from the layer preceding the softmax (\fref{fig:multipose_graph_1}). Another behavior we emphasize now is the presence of the "relatively high" activations from the non-target classes. The activations of Conv-CAM and Conv-CAM2 in \fref{fig:multipose_graph_1} perfectly show high activations of unrelated classes in the graph (e.g. red line in sub-image (c)). Though the softmax function (also called normalized exponential) emphasize the probability of the highest class being the good one, we believe, from the second assumption listed in section \ref{sub:issues}, that it would be nice to lower the activations of the non present classes.
+				As such, we test a new regularization method in the following method.
+		
 
 			
-			
+			\subsection{Conv-L1CAM}
+			\label{sub:conv_l1cam}
+				In this new model, we "build" on top of the preceding one (Conv-CAM2) adding a regularization term (to use at training time). The regularization term is a simple L1 norm applied to each and every values of the last convolutional outputs.
+
+
+			\subsection{Conv-NoPool-L1CAM}
+			\label{sub:conv_nopool_l1cam}
+				remove the sawtooth shape
 
 				\begin{figure}[h]
 					\centering
 					\includegraphics[width=0.45\textwidth]{images/multiPosGraphConvFC}
 					\includegraphics[width=0.45\textwidth]{images/multiPosGraphConvCAM}
-					\caption{on the left : CP-MNIST generated with : $w^{cp}=50,h^{cp}=50, x^{cp}=20,y^{cp}=20$ and $bg=.1$. and on the right : CP-MNIST generated with : $w^{cp}=100,h^{cp}=100, x^{cp}=20,y^{cp}=20$ and $bg=.1$}
-					\label{fig:CP_MNIST_5050_2020_noisy}
+					\includegraphics[width=0.45\textwidth]{images/multiPosGraphConvCAM2}
+					\caption{Add an interesting caption...}
+					\label{fig:multipose_graph_1}
 				\end{figure}
 
 			
