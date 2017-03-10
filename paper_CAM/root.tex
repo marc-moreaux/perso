@@ -1,0 +1,248 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%2345678901234567890123456789012345678901234567890123456789012345678901234567890
+%		1		 2		 3		 4		 5		 6		 7		 8
+
+% \documentclass[letterpaper, 10 pt, conference]{ieeeconf}  % Comment this line out if you need a4paper
+
+\documentclass[a4paper, 10pt, conference]{ieeeconf}	  % Use this line for a4 paper
+
+\IEEEoverridecommandlockouts							  % This command is only needed if 
+														  % you want to use the \thanks command
+
+\overrideIEEEmargins									  % Needed to meet printer requirements.
+
+% See the \addtolength command later in the file to balance the column lengths
+% on the last page of the document
+
+% The following packages can be found on http:\\www.ctan.org
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{fancyref}
+
+
+\title{\LARGE \bf
+Plout plout VGG-CONV-GAP
+}
+
+
+\author{Albert Author$^{1}$ and Bernard D. Researcher$^{2}$% <-this % stops a space
+\thanks{*This work was not supported by any organization}% <-this % stops a space
+\thanks{$^{1}$Albert Author is with Faculty of Electrical Engineering, Mathematics and Computer Science,
+		University of Twente, 7500 AE Enschede, The Netherlands
+		{\tt\small albert.author@papercept.net}}%
+\thanks{$^{2}$Bernard D. Researcheris with the Department of Electrical Engineering, Wright State University,
+		Dayton, OH 45435, USA
+		{\tt\small b.d.researcher@ieee.org}}%
+}
+
+
+\begin{document}
+
+
+
+\maketitle
+\thispagestyle{empty}
+\pagestyle{empty}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{abstract}
+  In this paper, we benchmark how the concept of Global Average Pooling (GAP) applies in the context of semi-supervised class localization, benchmark it with respect to Zhou et al's \cite{zhou2016learning} Class Activation Mapping (CAM), propose a regularization over the GAP maps to enhance the results achieved by \cite{zhou2016learning} and study if a combination of these two models can result in better model accuracy.
+\end{abstract}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{INTRODUCTION}
+
+Most of the modern deep learning models used for object classification, such as VGGNet\cite{simonyan2014very}, GooLeNet\cite{szegedy2015going}, or InceptionV3\cite{szegedy2016rethinking} rely on the use of fully connected (FC) layers at the end of their architectures. Another recent architecture, ResNet\cite{he2016deep} uses Global Average Pooling (GAP) followed by a Fully Connected (FC) layer at the end of its net, enabling a possibility to recover object localization.
+
+Global Average Pooling (GAP) was first presented as a structural regularizer in Network in Network\cite{lin2013network} and was later used in the GoogLeNet \cite{szegedy2015going} as such. In ResNet\cite{he2016deep} and a recent work by Zhou et al \cite{zhou2016learning} it was used to perform object detection. This later paper showed that GAP could be used in many architectures as AlexNet\cite{krizhevsky2012imagenet}, VGGNet\cite{simonyan2014very} or GoogLeNet\cite{szegedy2015going} to retain the localization features provided by convolutional layers. With these modifications, \cite{zhou2016learning,he2016deep}  were able to achieve state of the art class detection and classification on large datasets such as ILSVRC 2014\cite{simonyan2014very} or PASCAL\cite{everingham2010pascal}.
+
+\subsection{Related Work}
+\label{sub:related_work}
+Many CNNs have been used lastly to perform real-time object localization. Out of them there is fully supervised trained models like R-CNN\cite{girshick2014rich}, faster R-CNN\cite{ren2015faster} and YOLO\cite{redmon2015you}, which are ranging from 3 fps, for R-CNN, to 155 fps, for YOLO.
+
+\textbf{Semi-supervised learning:}
+Other models have been used for semi-supervised learning. Oquab et al\cite{oquab2015object} trained a CNN-FC network (a CNN model finishing with a fully connected layer before the softmax) on fixed images which they later reused convolving it to a larger input image and therefore converted the last FC layer as a new convolutional one (proportional to the ratio between the new image and the trained one). Once they had this new convolution layer, they apply a max pooling operation to localize a class and retrieve this value. Though this work is a great inspiration for ours, we believe the artificial convolution layer can be by-passed and that the max-polling could be replaced by a mean-pooling permitting our model to back propagate more values. 
+
+This intuition was tested out Zhou et al \cite{zhou2016learning}. In their paper, the authors describe a single shot learning using as a model, a stack of CNNs ending with 1024 convolutional units which output maps are reduced into a single value each with Global Average Pooling (resulting in 1024 values). These values are then fully connected to a softmax layer. Thank to its architecture, the model can rely on a general image context to perform class detection and on the last CNN to retrieve a class localization. We believe that, in the context of object localization, our model should not rely on a full image context to recognize a class, but only on the gaze given by the convolutions. In which case, our model could have a better localization faculty.
+
+\textbf{Class saliency:}
+
+
+\section{MODEL ARCHITECTURE}
+	\begin{figure}[h]
+		\includegraphics[width=0.5\textwidth]{CAM_schema}
+		\centering
+		\caption{caption.}
+		\label{fig:CAM_schema}
+	\end{figure}
+
+
+	As in \cite{zhou2016learning,he2016deep} we use a convolutional stack as our base model. To ease this process, we follow the recommendations given by Zhou et al.\cite{zhou2016learning} and use a piece of VGG16Net \cite{simonyan2014very}: All layers from the inputs until layer \textit{conv5-3} and use this as our "base model".
+
+	As visible on \fref{fig:CAM_schema} we add a new convolutional layer on top of the base model whose resulting matrix should contain the saliency maps of each classes (the orange squares on the figure). In our classification task, we have $c$ classes and decide to allocate $m$ maps per classes, therefore, we compute $m\cdot c$ maps. Each of these maps are computed using a $[3\times3]$ convolutional layer of stride  1. They are then averaged with Global Average Pooling, clustered (by average) in $c$ values (one per class) and fed to a softmax layer for classification. When $m=1$, we have one map per layer class which corresponds to the original idea developed in NiN\cite{lin2013network}.
+
+	\vskip 1em
+	\textbf{Formally}, the end of the network is defined as follows : lets $f_k(x,y)$ be the activation of unit $k\in\{0,m\cdot c\}$ in the last convolutional layer at the spatial location (x,y), then the Global Average Pooling $\mathbf{g\in \mathbb{R}^{m \cdot c}}$ is defined by :
+	\begin{equation}
+		g_k = \sum_{x,y} f_k(x,y)
+	\end{equation}
+	Then we cluster $\mathbf{g}$ in another vector $\mathbf{g'} \in \mathbb{R}^c$.
+	\begin{equation}
+		g'^c = \sum_{m} g_k
+	\end{equation}
+	And feed this vector to a softmax function to compute the image predictions ${p^c}$.
+	\begin{equation}
+		p^c = \textrm{softmax}^c (\mathbf{g'})
+	\end{equation}
+
+	\subsection{Regularization}
+	\label{sub:regularization}
+		The last convolutional unit we use is a ReLu \cite{nair2010rectified}
+	
+
+
+
+\subsection{Maintaining the Integrity of the Specifications}
+
+The template is used to format your paper and style the text. All margins, column widths, line spaces, and text fonts are prescribed; please do not alter them. You may note peculiarities. For example, the head margin in this template measures proportionately more than is customary. This measurement and others are deliberate, using specifications that anticipate your paper as one part of the entire proceedings, and not as an independent document. Please do not revise any of the current designations
+
+\section{MATH}
+
+Before you begin to format your paper, first write and save the content as a separate text file. Keep your text and graphic files separate until after the text has been formatted and styled. Do not use hard tabs, and limit use of hard returns to only one return at the end of a paragraph. Do not add any kind of pagination anywhere in the paper. Do not number text heads-the template will do that for you.
+
+Finally, complete content and organizational editing before formatting. Please take note of the following items when proofreading spelling and grammar:
+
+\subsection{Abbreviations and Acronyms} Define abbreviations and acronyms the first time they are used in the text, even after they have been defined in the abstract. Abbreviations such as IEEE, SI, MKS, CGS, sc, dc, and rms do not have to be defined. Do not use abbreviations in the title or heads unless they are unavoidable.
+
+\subsection{Units}
+
+\begin{itemize}
+
+\item Use either SI (MKS) or CGS as primary units. (SI units are encouraged.) English units may be used as secondary units (in parentheses). An exception would be the use of English units as identifiers in trade, such as Ò3.5-inch disk driveÓ.
+\item Avoid combining SI and CGS units, such as current in amperes and magnetic field in oersteds. This often leads to confusion because equations do not balance dimensionally. If you must use mixed units, clearly state the units for each quantity that you use in an equation.
+\item Do not mix complete spellings and abbreviations of units: ÒWb/m2Ó or Òwebers per square meterÓ, not Òwebers/m2Ó.  Spell out units when they appear in text: Ò. . . a few henriesÓ, not Ò. . . a few HÓ.
+\item Use a zero before decimal points: Ò0.25Ó, not Ò.25Ó. Use Òcm3Ó, not ÒccÓ. (bullet list)
+
+\end{itemize}
+
+
+\subsection{Equations}
+
+The equations are an exception to the prescribed specifications of this template. You will need to determine whether or not your equation should be typed using either the Times New Roman or the Symbol font (please no other font). To create multileveled equations, it may be necessary to treat the equation as a graphic and insert it into the text after your paper is styled. Number equations consecutively. Equation numbers, within parentheses, are to position flush right, as in (1), using a right tab stop. To make your equations more compact, you may use the solidus ( / ), the exp function, or appropriate exponents. Italicize Roman symbols for quantities and variables, but not Greek symbols. Use a long dash rather than a hyphen for a minus sign. Punctuate equations with commas or periods when they are part of a sentence, as in
+
+$$
+\alpha + \beta = \chi \eqno{(1)}
+$$
+
+Note that the equation is centered using a center tab stop. Be sure that the symbols in your equation have been defined before or immediately following the equation. Use Ò(1)Ó, not ÒEq. (1)Ó or Òequation (1)Ó, except at the beginning of a sentence: ÒEquation (1) is . . .Ó
+
+\subsection{Some Common Mistakes}
+\begin{itemize}
+
+
+\item The word ÒdataÓ is plural, not singular.
+\item The subscript for the permeability of vacuum ?0, and other common scientific constants, is zero with subscript formatting, not a lowercase letter ÒoÓ.
+\item In American English, commas, semi-/colons, periods, question and exclamation marks are located within quotation marks only when a complete thought or name is cited, such as a title or full quotation. When quotation marks are used, instead of a bold or italic typeface, to highlight a word or phrase, punctuation should appear outside of the quotation marks. A parenthetical phrase or statement at the end of a sentence is punctuated outside of the closing parenthesis (like this). (A parenthetical sentence is punctuated within the parentheses.)
+\item A graph within a graph is an ÒinsetÓ, not an ÒinsertÓ. The word alternatively is preferred to the word ÒalternatelyÓ (unless you really mean something that alternates).
+\item Do not use the word ÒessentiallyÓ to mean ÒapproximatelyÓ or ÒeffectivelyÓ.
+\item In your paper title, if the words Òthat usesÓ can accurately replace the word ÒusingÓ, capitalize the ÒuÓ; if not, keep using lower-cased.
+\item Be aware of the different meanings of the homophones ÒaffectÓ and ÒeffectÓ, ÒcomplementÓ and ÒcomplimentÓ, ÒdiscreetÓ and ÒdiscreteÓ, ÒprincipalÓ and ÒprincipleÓ.
+\item Do not confuse ÒimplyÓ and ÒinferÓ.
+\item The prefix ÒnonÓ is not a word; it should be joined to the word it modifies, usually without a hyphen.
+\item There is no period after the ÒetÓ in the Latin abbreviation Òet al.Ó.
+\item The abbreviation Òi.e.Ó means Òthat isÓ, and the abbreviation Òe.g.Ó means Òfor exampleÓ.
+
+\end{itemize}
+
+
+\section{USING THE TEMPLATE}
+
+Use this sample document as your LaTeX source file to create your document. Save this file as {\bf root.tex}. You have to make sure to use the cls file that came with this distribution. If you use a different style file, you cannot expect to get required margins. Note also that when you are creating your out PDF file, the source file is only part of the equation. {\it Your \TeX\ $\rightarrow$ PDF filter determines the output file size. Even if you make all the specifications to output a letter file in the source - if your filter is set to produce A4, you will only get A4 output. }
+
+It is impossible to account for all possible situation, one would encounter using \TeX. If you are using multiple \TeX\ files you must make sure that the ``MAIN`` source file is called root.tex - this is particularly important if your conference is using PaperPlaza's built in \TeX\ to PDF conversion tool.
+
+\subsection{Headings, etc}
+
+Text heads organize the topics on a relational, hierarchical basis. For example, the paper title is the primary text head because all subsequent material relates and elaborates on this one topic. If there are two or more sub-topics, the next level head (uppercase Roman numerals) should be used and, conversely, if there are not at least two sub-topics, then no subheads should be introduced. Styles named ÒHeading 1Ó, ÒHeading 2Ó, ÒHeading 3Ó, and ÒHeading 4Ó are prescribed.
+
+\subsection{Figures and Tables}
+
+Positioning Figures and Tables: Place figures and tables at the top and bottom of columns. Avoid placing them in the middle of columns. Large figures and tables may span across both columns. Figure captions should be below the figures; table heads should appear above the tables. Insert figures and tables after they are cited in the text. Use the abbreviation ÒFig. 1Ó, even at the beginning of a sentence.
+
+\begin{table}[h]
+\caption{An Example of a Table}
+\label{table_example}
+\begin{center}
+\begin{tabular}{|c||c|}
+\hline
+One & Two\\
+\hline
+Three & Four\\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+
+   \begin{figure}[thpb]
+	  \centering
+	  \framebox{\parbox{3in}{We suggest that you use a text box to insert a graphic (which is ideally a 300 dpi TIFF or EPS file, with all fonts embedded) because, in an document, this method is somewhat more stable than directly inserting a picture.
+}}
+	  %\includegraphics[scale=1.0]{figurefile}
+	  \caption{Inductance of oscillation winding on amorphous
+	   magnetic core versus DC bias magnetic field}
+	  \label{figurelabel}
+   \end{figure}
+   
+
+Figure Labels: Use 8 point Times New Roman for Figure labels. Use words rather than symbols or abbreviations when writing Figure axis labels to avoid confusing the reader. As an example, write the quantity ÒMagnetizationÓ, or ÒMagnetization, MÓ, not just ÒMÓ. If including units in the label, present them within parentheses. Do not label axes only with units. In the example, write ÒMagnetization (A/m)Ó or ÒMagnetization {A[m(1)]}Ó, not just ÒA/mÓ. Do not label axes with a ratio of quantities and units. For example, write ÒTemperature (K)Ó, not ÒTemperature/K.Ó
+
+\section{CONCLUSIONS}
+
+A conclusion section is not required. Although a conclusion may review the main points of the paper, do not replicate the abstract as the conclusion. A conclusion might elaborate on the importance of the work or suggest applications and extensions. 
+
+\addtolength{\textheight}{-12cm}   % This command serves to balance the column lengths
+								  % on the last page of the document manually. It shortens
+								  % the textheight of the last page by a suitable amount.
+								  % This command does not take effect until the next page
+								  % so it should come on the page before the last. Make
+								  % sure that you do not shorten the textheight too much.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{APPENDIX}
+
+Appendixes should appear before the acknowledgment.
+
+\section*{ACKNOWLEDGMENT}
+
+The preferred spelling of the word ÒacknowledgmentÓ in America is without an ÒeÓ after the ÒgÓ. Avoid the stilted expression, ÒOne of us (R. B. G.) thanks . . .Ó  Instead, try ÒR. B. G. thanksÓ. Put sponsor acknowledgments in the unnumbered footnote on the first page.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+References are important to the reader; therefore, each citation must be complete and correct. If at all possible, references should be commonly available publications.
+
+
+\newpage
+\bibliography{main}
+\bibliographystyle{ieeetr}
+
+
+
+
+
+\end{document}

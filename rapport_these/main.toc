@@ -1,0 +1,21 @@
+\select@language {english}
+\select@language {english}
+\contentsline {chapter}{\numberline {1}Saliency Through Deep Nets}{5}
+\contentsline {section}{\numberline {1.1}Context of the research}{5}
+\contentsline {subsection}{\numberline {1.1.1}Video Dataset}{5}
+\contentsline {subsection}{\numberline {1.1.2}Image Dataset}{5}
+\contentsline {subsection}{\numberline {1.1.3}Supervised Learning}{6}
+\contentsline {subsection}{\numberline {1.1.4}Semi-Supervised Learning}{6}
+\contentsline {section}{\numberline {1.2}Work on saliency}{7}
+\contentsline {subsection}{\numberline {1.2.1}Global Average Pooling}{7}
+\contentsline {subsection}{\numberline {1.2.2}Class Activation Mapping}{7}
+\contentsline {subsection}{\numberline {1.2.3}Issues}{8}
+\contentsline {subsection}{\numberline {1.2.4}Ongoing Investigation}{8}
+\contentsline {subsection}{\numberline {1.2.5}Experiments}{9}
+\contentsline {subsubsection}{Conv-FC}{10}
+\contentsline {subsubsection}{Conv-CAM}{10}
+\contentsline {subsubsection}{Conv-CAM2}{10}
+\contentsline {subsubsection}{Conv-L1CAM2}{12}
+\contentsline {subsubsection}{Conv-NoPool-L1CAM2}{12}
+\contentsline {chapter}{Appendices}{15}
+\contentsline {chapter}{\numberline {A}Constrained position MNIST}{17}
