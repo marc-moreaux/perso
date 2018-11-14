@@ -1,0 +1,105 @@
+\documentclass[12pt, letterpaper, twoside]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+
+
+\title{Discussion on CAMs and GAPs}
+\author{Marc Moreaux \thanks{to meeee}}
+\date{March 2017}
+
+\begin{document}
+
+
+	\begin{titlepage}
+	\maketitle
+	\end{titlepage}
+
+	\section{Abstract}
+	\label{sec:abstract}
+	In this work we further demonstrate the use of Global average pooling (as in \cite{zhou2016learning}) in conjunction with some regularizer in order to perform class localization. We also propose a modified version of the GAP network such that the network doesn't rely on any fully connected neurons. We evaluate our work on two datasets, the first one is an augmented version of the MNIST dataset\cite{lecun1998gradient} and the second one is the Stanford Actions 40 dataset\cite{yao2011human}. Comparing our technique with \cite{zhou2016learning}, we are able to enhance the overall class prediction and class localization on natural images drawn from actions 40. 
+
+
+	\section{Introduction}
+	\label{sec:introduction}
+	The initial aim of this work is to evaluate the performance of a semi-supervised deep neural network for class localization in an image.
+	The context is the following : its very easy to find a large amount of images labeled by name but harder to find large corpora of images labeled both by name and their localization. Based on this observation and on the work of Zhou at al. \cite{zhou2016learning}, whom proves that it's possible to extract a class localizations based on images only tagged by name, we propose to  further analysis of their models 
+
+	\section{Our work}
+	\label{sec:related_work}
+	The way we structured our work is the following: at first we build two baselines, ConvFC is
+	at first, we tested our hypothesis on two augmented versions of MNIST, then we tested the same methods on realistic images drawn from actions 40. As a base for comparison, we compare ourselves to a naive CNN followed by a FCNN and to the model proposed by Zhou at al. 
+
+	\subsubsection{Model}
+	\label{ssub:model}
+	The model we use is a stack of convolutional layers ending with a Global Average Pooling Layer which averages are directly connected to the softmax function.
+	
+
+	\subsubsection{MNIST} 
+	\label{ssub:mnist}
+	The first 
+
+
+	\section{Analysis}
+	\label{sec:analysis}
+	
+
+	\section{Conclusion}
+	\label{sec:conclusion}
+
+	Reading through the literature, 2 interesting papers emerged. The first one, from Simonyan et al.\cite{simonyan2013deep} describe how back propagating the loss of image, through a convNet (like \cite{lecun1998gradient}), with respect to its input images can result in a saliency map. The second one, from Zhou et al.\cite{zhou2016learning}, put to evidence that a different network architecture using Convolutional layers followed by the GAP layer proposed by lin et al.\cite{lin2013network} and a fully connected layer could result in a proper semi-supervised learning of a class saliency visualized through a method they call CAM. Our paper is a follow up on this last one. We propose two methods to enhance the results retrieved by the model.
+
+	The first method we propose is aimed at having (a) a better visualization of the Class Activation Mapping (CAM) and at (b) differentiating better one class from an other at the class activation level or, in other words, to build more specific CAM neurons.
+
+	The second method slightly redefines the way one can use the GAP layer for semi-supervised learning of a class localization. 
+
+
+	\subsection{model} 
+	\label{sub:model}
+		To test our first method, we train the VGG16 \cite{simonyan2014very} model proposed by Zhou et al.\cite{zhou2016learning}, which is to say, we remove the the layers after conv5-3 and added a $3\times3$ convolutional layer of stride 1 with 1024 units, followed by a GAP layer, a fully connected layer with $N$ units ($N$ classes) and a softmax layer.
+		Formally, the end of the network is defined as follow : lets $f_k(x,y)$ be the activation of unit $k$ in the last convolutional layer at the spatial location (x,y), then the Global Average Pooling is defined by :
+		\begin{equation}
+			\textrm{GAP}_k = \sum_{x,y} f_k(x,y)
+		\end{equation}
+		In this model the GAP layer if fully connected to the softmax layer, therefore the prediction vector $\mathbf{p}$ is computed as follows:
+		\begin{equation}
+			p_c = \textrm{softmax}\left(\sum_{k} w^c_k \cdot \textrm{GAP}_k\right)
+		\end{equation}
+		where $c$ is the index of one of the N classes. \\
+		We kindly remind here, that, because of this definition, the $\textrm{GAP}_k$ values are positions agnostic and that we recover the class saliency from the $f_k(x,y)$ and the $w^c_k$ values using a "Class Activation Mapping (CAM)" which is defined by : 
+		\begin{equation}
+			\textrm{CAM}^c(x,y) = \sum_k w^c_k \cdot f_k(x,y)
+		\end{equation}
+
+
+		Corresponding to the thesis subject of the writer, this model was trained and tested on the Stanford 40 actions dataset \cite{yao2011human}. This dataset is composed by 4000 training images of humans performing, on each images, one of 40 actions and 5532 testing images.
+		
+	
+
+	\subsection{Regularizing the CAM}
+	\label{sub:regularizing_the_cam}
+		When visualizing the $N$ CAMs corresponding to the $N$ classes, we found that the 2D visual representation was not representative of a human reality in the sense that the values of the CAMs would only make sense in the context of all the others, and therefore, needed an extra processing power to discriminate some classes from the others. As one of our constrains is to be able to extend our object saliency to multi-class object saliency in a real-time framework, this original model was not practicable. Therefore we constrained the $N$ CAMs to be easily interpretable by a human operator. In this particular work, we call interpretable a representation that is stable throughout the learnings and have a similar reference point. We found that zero would be a convenient reference. As a result, we expect to visualize, without any processing, a CAM map filled mostly with zeros but when a class in present.
+
+		To render such properties on our model, we added either an L1 or an L2 regularization term the resulting matrix of the last convolutional layer $f_k(x,y)$.
+		\begin{equation}
+			\begin{aligned}
+				L_1 &= \alpha \sum_{x,y,k} |f_k(x,y)| \\
+				L_2 &= \alpha \sqrt{\sum_{x,y,k} f_k(x,y)^2}
+			\end{aligned}
+		\end{equation}
+		As a result, we expect to decrease the sparsity of the resulting matrix.
+
+
+
+
+		The first step we take towards a better visualization of the CAM layer in a model similar to \cite{zhou2016learning} is a simple L1 or L2 regularization of the activity of the last activations 
+
+
+
+\newpage
+\bibliography{main}
+\bibliographystyle{ieeetr}
+
+
+
+
+\end{document}

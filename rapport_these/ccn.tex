@@ -6,41 +6,46 @@
 	\section{Context of the research}
 	\label{sec:context_of_the_research}
 
-		As a reminder, the aim of the thesis is to perform Audio-visual perception for human action recognition and to recognize object affordances from an assistant robot. The research direction we consider to tackle this problem is close-to-real-time semi-supervised learning. To be more specific, we want to teach a classifier to localize human actions, both in time and space, from an incomplete dataset. 	
+		The aim of the thesis is to perform Audio-visual perception, embedded on an assistant robot, for human action recognition and to recognize object affordances from an assistant robot. The research direction we consider to tackle this problem is close-to-real-time semi-supervised learning. To be more specific, we want to teach a classifier to localize human actions, both in time and space, from an incomplete dataset. 	
 
 		\subsection{Video Dataset}
-		\label{sub:dataset}
-			Going through the existing video datasets, we realized that none of the video datasets had the desired properties of our problematic. The video datasets would be soundless, filmed from high grounds (e.g. video surveillance), filmed with lots of constrains (e.g. same, or very few, people performing actions) and labeled without spatial information. Yet, in September 2016, Youtube released a new database \cite{abu2016youtube} composed by 8 million videos and 4800 classes. All the videos contain a sound band, where filmed from diverse point of views and are very diverse. Regrettably, even for a human (like myself), it's not always obvious to recognize the desired labels of a video, yet, we can expect to find some patterns throughout these classes. One idea could be to shrink this dataset into another one with our desired classes.
+		\label{sub:video_dataset}
+			Going through the existing video datasets, we realized that none of them had the desired properties of our problematic. The video datasets would be soundless, filmed from high grounds (e.g. video surveillance), filmed with lots of constrains (e.g. same, or very few, people performing actions) and labeled without spatial information. Yet, in September 2016, Youtube released a new database \cite{abu2016youtube} composed by 8 million videos and 4800 classes of "4800 visual entities" (eg. car, music video, fishing, wedding, comedy, animation). All the videos contain a sound band, where filmed from diverse point of views and are very diverse. Regrettably, even for a human (like myself), it's not always obvious to recognize the desired labels of a video\footnote{from a personal experience, I could not label many of the videos I watched.}, yet, we can expect to find some patterns throughout these classes. One idea could be to shrink this dataset into another one with our desired classes.
 
 
 		\subsection{Image Dataset}
 		\label{sub:image_dataset}
-			Before tackling the spatio-temporal analysis of a video stream, we started our researches on spatial analysis of frames (or images). Obviously, these dataset would be composed of images displaying objects frequently used by humans. As we also want to evaluate the localization abilities of our classifier, we also needed our datasets to contain localization labeling. With respect to this constrains, we selected three datasets : Microsoft coco \cite{lin2014microsoft}, ILSVRC2012 \cite{ILSVRC15} and Pascal VOC 2007 \cite{pascalVoc2007}. Each of them includes frequently used objects with both labels and 2D localizations.
+			Before tackling the spatio-temporal analysis of a video stream, we started our researches on spatial analysis of frames (or images). Obviously, these dataset would be composed of images displaying objects frequently used by humans. As we also want to evaluate the localization abilities of our classifier, we also needed our datasets to contain localization labeling. With respect to this constrains, we selected three datasets : Microsoft coco \cite{lin2014microsoft}, ILSVRC2012 \cite{ILSVRC15} and Pascal VOC 2007 \cite{pascalVoc2007}. Each of them includes frequently used objects with both labels and 2D localizations. 
+			% TODO : list differences
 
 
 
 		\subsection{Supervised Learning}
 		\label{sub:supervised_learning}
-			In order to attend the spatial detection of classes, we first have been looking into fully-supervised deep-learning. This method implies that we classify our dataset with a neural network which objective function has as parameters (a) the input image, (b) its class and (c) the localization of this class. Here we found 3 papers :
+			In order to attend the spatial detection of classes, we first have been looking into fully-supervised deep-learning. This method implies that we classify our dataset with a neural network which objective function has as parameters (a) the input image, (b) its class and (c) the localization of this class. Among research done in this direction, we detail 3 papers :
 			\begin{itemize}
-				\item \textbf{R-CNN\cite{girshick2014rich} :} In this paper, the authors (a) would perform a selective search on the input image, resulting in 2K images (extracted from the original one). They would then (b) run this images into a convolutional net to obtain a large feature vector and (c) classify these regions with a SVM. Because of the selective search and the propagation of the large amount of images in the network, this implementation wasn't real time, still its mAP reached $66\%$ on VOC2007.
-				\item \textbf{Faster R-CNN\cite{ren2015faster} : } In this other paper, Ren et al. would tackle the same problem with a similar approach but they roughly switched the convolution and the selective search. As a result a single image would be (a) processed by a CNN which would produce a feature map. This map would (b) be analyzed by a region proposal network to create region proposals and followed by (c) a classifier to produce the combination of classes and regions. This method was faster (198ms) and its mAP close to $79\%$ on VOC2007.
-				\item \textbf{YOLO\cite{redmon2015you} :} Here, Redmon et al. took a different approach on the problem. They would (a) split the original image into 49 equal squares and (b) guess, for each of them, (b.1) a bounding box probability and shape (the bounding box would ofter be larger than the box in which the prediction takes place) and (b.2) the probability of the class included in this box. (c) Given these many values, they would aggregate the results into a prediction. With this simpler architecture, the authors reached $78.6\%$ mAP on VOC2007 and a speed of 25ms.
+				\item In R-CNN\cite{girshick2014rich}, the authors (a) would perform a selective search on the input image, resulting in 2K sub-images (extracted from the original one). They would then (b) run this images into a convolutional net to obtain a large feature vector and (c) classify these regions with a SVM. Because of the selective search and the propagation of the large amount of images in the network, this implementation wasn't real time, still its mAP reached $66\%$ on VOC2007.
+				\item In Faster R-CNN\cite{ren2015faster}, Ren et al. would tackle the same problem with a similar approach but they roughly switched the convolution and the selective search. As a result a single image would be (a) processed by a CNN which would produce a feature map. This map would (b) be analyzed by a region proposal network to create region proposals and followed by (c) a classifier to produce the combination of classes and regions. This method is faster (198ms) and its mean Average Precision (mAP) close to $79\%$ on VOC2007. % TODO explain mAP
+				\item In YOLO\cite{redmon2015you}, Redmon et al. took a different approach on the problem. They would (a) split the original image into 49 equal squares and (b) estimate, for each of them, (b.1) a bounding box probability and shape (the bounding box would ofter be larger than the box in which the prediction takes place) and (b.2) the probability of the class included in this box. (c) Given these many values, they would aggregate the results into a prediction. With this simpler architecture, the authors reached $78.6\%$ mAP on VOC2007 and a speed of 25ms.
 			\end{itemize}
 
 		\subsection{Semi-Supervised Learning}
 		\label{sub:semi_supervised_learning}
-			The methodology we prefer to solve our problematic is "deep semi-supervised learning". As we've seen earlier, there is plenty of video datasets that exist (which we could aggregate) but none of them have a spatio-temporal labeling of the classes. What they have instead is a class labeling for the video. What we expect from our work is to localize an unspecified pattern under each and every class which would discriminate a class from another one and which, hopefully, would correspond to a class localization. In their work, Zhou et al. \cite{zhou2015learning} used that kind of technique. Their learning algorithm is a function of two inputs : (a) the image and (b) the class it belongs to. At run time, the classifier is able to predict, close to real-time, a class and its position on the image. Sadly, there wasn't any time or accuracy evaluation on VOC2007 comparison. 
-			What we found in the afford mentioned paper, is (a) the model always predict a class. (b) The Tensorflow implementation is sub-optimal and won't work real-time. Still, we believe their technique, based on summed of convolved images (namely : Global Average Polling (GAP)), is very efficient and should be further investigated.
+			The methodology we prefer to solve our problematic is "deep semi-supervised learning" because (as we've seen earlier section \ref{sub:video_dataset}), there is many video datasets that exist (which we could aggregate) but almost none of them have a spatio-temporal labeling of the classes (challenge III of \cite{ILSVRC15} is a counter-example). What they have instead is a class labeling for the video. What we expect from our work is to localize an unspecified pattern under each and every class which would discriminate a class from another one and which, hopefully, would correspond to a class localization. In their work, Zhou et al. \cite{zhou2015learning} used that kind of technique. Their learning algorithm is a function of two inputs : (a) the image and (b) the class it belongs to. At run time, the classifier is able to predict, close to real-time, a class and its position on the image. Sadly, there wasn't any time or accuracy evaluation on VOC2007 comparison. 
+			What we found in the aforementioned paper, is (a) the model always predict a class. (b) The Tensorflow implementation available on-line (\url{https://github.com/metalbubble/CAM}) was sub-optimal and won't work real-time. Still, we believe their technique, based on summed of convolved images (namely : Global Average Pooling (GAP)), is very efficient and should be further investigated.
+
+		TODO : Conclude here % TODO : Conclude here
 
 
 	
 	\section{Work on saliency}
 	\label{sec:work_on_saliency}
 
+		In this section we'll see which modifications we performed on the aforementioned semi-supervised learning technique to produce our saliency maps. We'll begin introducing a key concept used on \cite{zhou2015learning} (the Global Average Pooling (section \ref{sub:global_average_pooling}) which permits Class Activation Mapping(\ref{sub:class_activation_mapping})) then we'll express some issues we had with this method (section \ref{sub:issues}) and finally, we'll explained our contribution towards these experiments (section \ref{sub:ongoing_investigation} \ref{sub:experiments}).
+
 		\subsection{Global Average Pooling}
 		\label{sub:global_average_pooling}
-			In this section, we want to emphasize the benefits of Global Average Pooling (GAP) as formulated and used in Zhou et al.'s work \cite{zhou2015learning}. GAP is a simple operator performing the mean of a two dimensional tensor into a value. In their paper, the operator was used the following way : consider a stack of 2D convolutions over an image resulting in a 3 dimensional tensor. The GAP operator, applied to this last tensor, would result in a one dimensional tensor which would correspond to the means of each activation unit. Lets $f_k(x,y)$ represent an activation of unit $k$ at spatial location $(x,y)$.
+			We start emphasizing the benefits of Global Average Pooling (GAP) as formulated and used in Zhou et al.'s work \cite{zhou2015learning}. GAP is a simple operator performing the mean of a two dimensional tensor into a value. In their paper, the operator was used the following way : consider a stack of 2D convolutions over an image resulting in a 3 dimensional tensor. The GAP operator, applied to this last tensor, would result in a one dimensional tensor which would correspond to the means of each activation unit. Lets $f_k(x,y)$ represent an activation of unit $k$ at spatial location $(x,y)$.
 			\begin{equation}
 				\text{CAM}_k = \sum_{x,y}f_k(x,y)
 			\end{equation}
@@ -62,23 +67,23 @@
 		\label{sub:issues}
 			Much of this work is very satisfying. The classifier is able to detect classes (the learning task) and to provide a saliency map (without location labeling). Yet, we found two issues : 
 			\begin{itemize}
-				\item the first one is related to the messiness of the prediction when none of the learned classes are present. This may sound silly as the classifier isn't supposed to deal with this type of situation, yet, in our use case, we would like our classifier to be insensible to images with none of the target classes. 
-				\item The second issue is more of a conceptual one. By leveraging the $\text{CAM}_x$ values and aggregating them into a single neuron, the classifier looses some spatial dependencies. 
+				\item The first one is related to the messiness of the prediction when none of the learned classes are present. This may sound silly as the classifier isn't supposed to deal with this type of situation, yet, in our use case, we would like our classifier to be insensible to images with none of the target classes. In other words, we want our classifier to be specific (avoid excess of false positives)(TODO: check this def).
+				\item The second issue is more of a conceptual one. By leveraging the $\text{CAM}_k$ values and aggregating them into a single neuron, the classifier looses some spatial dependencies. 
 				For the sake of this argument, lets consider the $f_1$ unit was computing the probability of a face being present in an image and $f_3$ was computing the probability of a chest being present. These two probabilities are a function of a given amount of xs and ys pixels, therefore, they are 2D localized. Using weighted neurons after the CAM layer removes the localization relation existing between the chest and the face.
 			\end{itemize}
 			In the following subsection, we will see how we addressed those two issues.
 
-		\subsection{Second issue}
-		\label{sub:second_issue}		
-			To address these two issues we run experiments. We first addressed the conceptual one by comparing a regular conv-FC net (a network composed by a stack of convolutional layers followed by fully connected layers and a softmax) to a conv-CAM net (a network composed by a stack of convolutional layers followed by a CAM layer and a softmax). 
+		\subsection{Ongoing Investigation}
+		\label{sub:ongoing_investigation}
+			To address these two issues we run experiments. We first addressed the conceptual one in section\ref{ssub:conv_fc} and section\ref{ssub:conv_cam} by comparing a regular conv-FC net (a network composed by a stack of convolutional layers followed by fully connected layers and a softmax) to a conv-CAM net (a network composed by a stack of convolutional layers followed by a CAM layer and a softmax). 
 			
 			The idea was to confirm that the fully connected layer(s) at the end of the Conv-FC were forcing the network to over-fitting the x and y positions of a class while training on a given dataset. Concretely : consider we have to train a classifier to recognize beds and the beds images on the database only shows beds on the lower left corner of these databases. Considering this training setup, we hypothesize that if, at test time, we show to the classifier images with a bed on the top right corner, the classifier won't be able to classify this new sample as a bed.
 
-			We could prove this property (a) mathematically or (b) In practice.
+			We could prove this property (a) mathematically or (b) "In practice".
 
 			\textbf{(a) Mathematically}, the intuition would be that the gradient of the target class would never have high values at the "non-active" regions. Considering a Conv-FC net with a single Fully-Connected layer, we would see that the gradients of the detected softmax class would be multiplied to the output values of the last convolutional layer which would be high if their range of attention contains a bed, and low otherwise. With the training algorithm we use (stochastic gradient descent) these low gradients won't allow a class detection where the training set didn't show the desired pattern (a bed elsewhere than the lower left corner to mention our previous example).
 
-			\textbf{(b) In practice}, we've tried to support our argument with an experiment. The first step was trying to determine whether if a Conv-FC net would over-fit to a given position on a constrained dataset. To do this, we simulated a training MNIST dataset \ref{sub:constrained_position_mnist} with images of size $(100*100)$ and the digits at a position $(20*20)$ (right figure of \fref{fig:CP_MNIST_5050_2020_noisy}). At test time, we used a dataset with different digits positions. "Obviously" those images were only correctly classified when the digits were at $(20*20)$. 
+			\textbf{(b) In practice}, we've tried to support our argument with an experiment. The first step was trying to determine whether if a Conv-FC net would over-fit to a given position on a constrained dataset. To do this, we simulated a training MNIST dataset \ref{sub:constrained_position_mnist} with images of size $(100*100)$ and the digits at a position $(10*10)$ (right figure of \fref{fig:CP_MNIST_5050_2020_noisy}). At test time, we used a dataset with different digits positions. "Obviously" those images were only correctly classified when the digits were at $(10*10)$. 
 
 			On the following section, we further detail our experiments.
 
@@ -104,16 +109,23 @@
 
 			\textbf{Learning parameters :} When not mentioned, we understand that the learning rate of the network is $0.005$, and the optimizer is the default Tensorflow implementation of "RMSprop". Also, we stopped the learning after 10 epochs and report the best of these 10 learning accuracies. This last point could be improve thanks to a learning algorithm that would stop automatically when an over-fitting is detected from the learning and validation accuracies.
 
-			\textbf{visualization :} To visualize our results, we use randomly chose a digit and create 64 images with the digit at 64 different positions (in the 100\*100 image)\footnote{(5,5)(5,10)(5,15)(5,20)...(10,5)(10,10)(10,15)...(40,40)}. We then compute the negative-log-likelihood of each of those images and plot the pre-softmax value of each of them (which lead to values unconstrained between [0,1]). This value is also called the "activation" of the neuron before the softmax. We will refer to this visualization as the multiPos graph. (We acknowledge in this parenthesis the lack of methodology due to the selection of a random digit which should have been fixed for proper comparisons of models...).
+			\textbf{visualization :} To visualize our results, we randomly chose a digit and create 64 images with the digit at 64 different positions (in the 100\*100 image)\footnote{(5,5)(5,10)(5,15)(5,20)...(10,5)(10,10)(10,15)...(40,40)}. We then compute the negative-log-likelihood of each of those images and plot the pre-softmax value of each of them (which lead to values unconstrained between [0,1]). This value is also called the "activation" of the neuron before the softmax. We will refer to this visualization as the multiPos graph. (We acknowledge in this parenthesis the lack of methodology due to the selection of a random digit which should have been fixed for proper comparisons of models...).
 
 			\subsubsection{Conv-FC} 
 			\label{ssub:conv_fc}
 				The conv-FC network has the convolutional structure aforementioned with a single fully-connected layer on top (fc1 is [252516, 512]\footnote{[input dimension, out dimension]}).
-				After 10 epochs, the classifier can recognize the top left digits with $98.88\%$ accuracy on the TSAT but can't recognize digits randomly placed on an image : the TSWRP accuracy is $11.23\%$. On the multiPos graph, we see that the digit "6" is never recognized on the 64 images but when the digit was positioned at (10,10).
+				After 10 epochs, the classifier can recognize the top left digits with $98.88\%$ accuracy on the TSAT but can't recognize digits randomly placed on an image : the TSWRP accuracy is $11.23\%$. On the multiPos graph (\fref{fig:multipose_graph_fc}), we see that the digit "6" is never recognized on the 64 images but when the digit was positioned at (10,10).
 
 				\begin{mdframed}[backgroundcolor = gray!30]
 					It's straight forward that this model couldn't generalize the position of a digit.
 				\end{mdframed}
+
+				\begin{figure}[h]
+					\centering
+					\includegraphics[width=0.45\textwidth]{images/multiPosGraphConvFC}
+					\caption{Conv-FC neurons' activations (before softmax)}
+					\label{fig:multipose_graph_fc}
+				\end{figure}
 
 			\subsubsection{Conv-CAM}
 			\label{ssub:conv_cam}
@@ -122,8 +134,15 @@
 				After 10 epochs, the accuracy on TSAT is $97.30\%$ and $97.24\%$ on TSWRP. We directly see a gap in between this method and the previous one. On the one hand, the model is now able to recognize a digit randomly positioned on the background, but on the other hand, the model is $1.33$ points less accurate than the previous at recognizing our digits on the TSAT. The following model (section \ref{ssub:conv_cam2}) will be aimed at overcoming this issue.
 
 				\begin{mdframed}[backgroundcolor = gray!30]
-					We look at the multiPose graph (\fref{fig:multipose_graph_1}) of this model and notice the randomly generated digit was recognized at every positions. We also notice an activation variation (shaped as a sawtooth) depending on the position of the digit and hypothesize this changes to be caused by the shape reduction operated by the pooling layers. This issue will be further investigated in section \ref{ssub:conv_nopool_l1cam}.
+					We look at the multiPose graph (\fref{fig:multipose_graph_CAM}) of this model and notice the randomly generated digit was recognized at every positions. We also notice an activation variation (shaped as a sawtooth) depending on the position of the digit and hypothesize this changes to be caused by the shape reduction operated by the pooling layers. This issue will be further investigated in section \ref{ssub:conv_nopool_l1cam}.
 				\end{mdframed}
+
+				\begin{figure}[h]
+					\centering
+					\includegraphics[width=0.45\textwidth]{images/multiPosGraphConvCAM}
+					\caption{Conv-CAM neurons' activations}
+					\label{fig:multipose_graph_CAM}
+				\end{figure}
 
 			\subsubsection{Conv-CAM2}
 			\label{ssub:conv_cam2}
@@ -132,17 +151,24 @@
 				Using such network, the accuracy on TSAT raises to $98.96\%$ and $98.97\%$ on TSWRP. The TSAT and TSWRP accuracies are therefore better with Conv-CAM2 than with the reference model Conv-FC on both datasets. (To be honest, I didn't check if this accuracy increase was "statistically significant").
 
 				\begin{mdframed}[backgroundcolor = gray!30]
-					\textbf{(a)} As in the previous model (Conv-CAM), \fref{fig:multipose_graph_1} still show a sawtooth shaped activations from the layer preceding the softmax.
+					\textbf{(a)} As in the previous model (Conv-CAM), \fref{fig:multipose_graph_CAM2} still show a sawtooth shaped activations from the layer preceding the softmax.
 
+					\vspace{1em}
 					\textbf{(b)} Another fact one can bring up is the presence of the "relatively high" activations from the non-target classes. what we mean here is that the neurons of non-target classes may fire-up even though the class corresponding to this neuron is not present in the image. we refer to this problem as the "multi-activation issue".
 
-					For example, in \fref{fig:multipose_graph_1} (c) we see that the "red" neuron is firing high values even-though this class is not present in the show image.
+					For example, in \fref{fig:multipose_graph_CAM2} we see that the "red" neuron (digit "9") is firing high values even-though this class is not present in the show image (digit "4", the purple line, is shown instead).
 
 					We believe, from the second assumption listed in section \ref{sub:issues}, that it would be nice to lower the activations of the non present classes.
 
 					To address this issue, we test a regularization technique in the following paragraph.
 				\end{mdframed}
 		
+				\begin{figure}[h]
+					\centering
+					\includegraphics[width=0.45\textwidth]{images/multiPosGraphConvCAM2}
+					\caption{Conv-CAM2 neurons' activations}
+					\label{fig:multipose_graph_CAM2}
+				\end{figure}
 
 			
 			\subsubsection{Conv-L1CAM2}
@@ -157,95 +183,110 @@
 				With this regularization term, the accuracy is decreased to $98.48$ on TSAT and $98.42$ on TSWRP. We notice that this regularization term didn't helped us performing better than its non-regularized homologue Conv-CAM2 ($- .48$ percentage points on TSAT and $- .55$ on TSWRP).
 
 				\begin{mdframed}[backgroundcolor = gray!30]
-					Even-thought the accuracies are decreased, our expected behavior is reached : \fref{fig:multipose_graph_1} (d) shows the activation for a digit "9". We see that its neuron activation is as least twice higher than the other  activations which are now way closer to 0.
+					Even-thought the accuracies are decreased, our expected behavior is reached : \fref{fig:multipose_graph_CAM2_L1} shows the activation for a digit "9". We see that its neuron activation is as least twice higher than the other  activations which are now way closer to 0.
 
 					This example is actually very relevant as digits "9" (red line) and "4" (purple line) are often very competitive.
 
 					To better understand the implications of this method, we should (a) compare the height of the neurons activations with and without this regularization term and (b) see if a threshold can be applied to detect a digit (e.g. a digit is present if its neuron activation is over 8)
 				\end{mdframed}
 				
+				\begin{figure}[h]
+					\centering
+					\includegraphics[width=0.45\textwidth]{images/multiPosGraphConvCAM2_L1}
+					\caption{Conv-L1CAM2 neurons' activations}
+					\label{fig:multipose_graph_CAM2_L1}
+				\end{figure}
 
 
-			\subsubsection{Conv-NoPool-L1CAM}
+			\subsubsection{Conv-NoPool-L1CAM2}
 			\label{ssub:conv_nopool_l1cam}
 				Finally, to have a better understanding of the model we've build so far (Conv-L1CAM2), we try to inhibit the sawtooth shape of the activations occurring when the digits moves around the background. Earlier (in section \ref{ssub:conv_cam}), we've hypothesized this behavior to emerge from the pooling layer. In this model, we remove the last pooling layer to understand analyze if it reduces the neurons activations variations.
+
+				\begin{itemize}
+					\setlength\itemsep{-0.4em}
+					\item conv1\_1 $[3*3*1*16]$
+					\item conv1\_2 $[3*3*16*16]$
+					\item max-pool
+					\item conv2\_1 $[3*3*16*16]$
+					\item conv2\_2 $[3*3*16*16]$
+					\item conv3\_1 $[3*3*16*16]$
+					\item conv3\_2 $[3*3*16*20]$
+					\item CAM
+					\item softmax
+				\end{itemize}
 
 				This model is least accurate than any previous ones. After 10 epochs, it has an accuracy of $96.8\%$ on TSAT and $96.91\%$ on TSWRP. The pooling layer is known to regularize the model, and removing it inhibited this property.
 
 				\begin{mdframed}[backgroundcolor = gray!30]
-					As expected, removing the pooling layer drastically reduces the activation variation of the neurons' activations. \Fref{fig:multipose_graph_1} (e) shows this sawtooth shape reduction. 
+					As expected, removing the pooling layer drastically reduces the activation variation of the neurons' activations. \Fref{fig:multipose_graph_noppol_CAM2_L1} shows this sawtooth shape reduction. 
 
 					A new investigation would be to try the method described in \cite{springenberg2014striving}. The authors replaced  pooling layers with convolutions of stride equals to the pooling stride. Their results show equal accuracies with this modification which could also help us.
 				\end{mdframed}
 
-
-
-			\begin{figure}[h]
-				\centering
-				\includegraphics[width=0.45\textwidth]{images/multiPosGraphConvFC}
-				\includegraphics[width=0.45\textwidth]{images/multiPosGraphConvCAM}
-				\includegraphics[width=0.45\textwidth]{images/multiPosGraphConvCAM2}
-				\includegraphics[width=0.45\textwidth]{images/multiPosGraphConvCAM2_L1}
-				\includegraphics[width=0.45\textwidth]{images/multiPosGraphConvnopool_CAM2_L1}
-				\caption{Add an interesting caption...}
-				\label{fig:multipose_graph_1}
-			\end{figure}
-
-			
-
-
-
-
-			\subsection{Constrained position MNIST}
-			\label{sub:constrained_position_mnist}
-				We developed a simulated dataset which we refer by Constrained-position MNIST (CP-MNIST). It's simulated in the sense that it's live generated by a piece of code. The main idea is to generate an image that is going to be of a fixed size (224*224 to fit to the literature) and containing an MNIST digit at a position we set $(x^{cp},y^{cp})$. Because we generate this dataset, we have full information on the class label and on the position label. We can further extend this virtual dataset with many informations such as (a) many MNIST sample on one image (e.g. to render numbers) or (b) a video composed by a series of frame (e.g. to render a letter displacement on a 2 or 3 dimensional space). 
-				In order to compute this dataset, a few parameters are available :
-				\begin{itemize}
-					\item The position of the digit : which can be set arbitrarily or randomly with $(x^{cp},y^{cp})$.
-					\item The Background size : which is typically set to $(50*50)$ or $(100*100)$ with $(w^{cp},h^{cp})$.
-					\item The background type : which can be either zeros (white background) or noisy (random noise from a normal distribution with a parametrized maximum value : $bg$).
-				\end{itemize}
-				In \fref{fig:CP_MNIST_5050_2020_noisy}, you can see extracts of this virtual dataset.
 				\begin{figure}[h]
 					\centering
-					\includegraphics[width=0.45\textwidth]{images/CP_MNIST_5050_2020_noisy} 
-					.
-					\includegraphics[width=0.45\textwidth]{images/CP_MNIST_100100_2020_noisy}
-					\caption{on the left : CP-MNIST generated with : $w^{cp}=50,h^{cp}=50, x^{cp}=20,y^{cp}=20$ and $bg=.1$. and on the right : CP-MNIST generated with : $w^{cp}=100,h^{cp}=100, x^{cp}=20,y^{cp}=20$ and $bg=.1$}
-					\label{fig:CP_MNIST_5050_2020_noisy}
+					\includegraphics[width=0.45\textwidth]{images/multiPosGraphConvnopool_CAM2_L1}
+					\caption{Conv-NoPool-L1CAM2 neurons' activations}
+					\label{fig:multipose_graph_noppol_CAM2_L1}
 				\end{figure}
 
-			
-			
-			\subsubsection{Regularization term}
-			\label{ssub:regularization_term}
-
-
-			\subsubsection{All Convolutional Net}
-			\label{ssub:all_convolutional_net}
-
-			
+				TODO: Conclude
+				% TODO: Conclude
 			
 
 
-	In this paper, we want to emphasize the use CAM layers for their saliency and localization properties.
-	The network we use is therefore a variant to the original network zhou2015learning. In the original paper, the authors introduce a combination of Global Average Pooling, followed by a weighted average and a softmax to classify their images. Here, we investigate the use of Global Average Pooling directly followed by a softmax function to classify our data. With this structure, this new network should capture further informations on spatial relations that the original could not grasp.
 
-	\subsection{Methodology} % (fold)
-	\label{sub:methodology}
+			\begin{appendices}
+				\chapter{Constrained position MNIST}
+				\label{sub:constrained_position_mnist}
+					We developed a simulated dataset which we refer by Constrained-position MNIST (CP-MNIST). It's simulated in the sense that it's live generated by a piece of code. The main idea is to generate an image that is going to be of a fixed size (224*224 to fit to the literature) and containing an MNIST digit at a position we set $(x^{cp},y^{cp})$. Because we generate this dataset, we have full information on the class label and on the position label. We can further extend this virtual dataset with many informations such as (a) many MNIST sample on one image (e.g. to render numbers) or (b) a video composed by a series of frame (e.g. to render a letter displacement on a 2 or 3 dimensional space). 
+					In order to compute this dataset, a few parameters are available :
+					\begin{itemize}
+						\item The position of the digit : which can be set arbitrarily or randomly with $(x^{cp},y^{cp})$.
+						\item The Background size : which is typically set to $(50*50)$ or $(100*100)$ with $(w^{cp},h^{cp})$.
+						\item The background type : which can be either zeros (white background) or noisy (random noise from a normal distribution with a parametrized maximum value : $bg$).
+					\end{itemize}
+					In \fref{fig:CP_MNIST_5050_2020_noisy}, you can see extracts of this virtual dataset.
+					\begin{figure}[h]
+						\centering
+						\includegraphics[width=0.45\textwidth]{images/CP_MNIST_5050_2020_noisy} 
+						.
+						\includegraphics[width=0.45\textwidth]{images/CP_MNIST_100100_2020_noisy}
+						\caption{on the left : CP-MNIST generated with : $w^{cp}=50,h^{cp}=50, x^{cp}=20,y^{cp}=20$ and $bg=.1$. and on the right : CP-MNIST generated with : $w^{cp}=100,h^{cp}=100, x^{cp}=20,y^{cp}=20$ and $bg=.1$}
+						\label{fig:CP_MNIST_5050_2020_noisy}
+					\end{figure}
+			\end{appendices}
+			
+			
+	% 		\subsubsection{Regularization term}
+	% 		\label{ssub:regularization_term}
 
-		Deploy a VGG16 with CAM 
-		Deploy a VGG16 with CCN + regularizer + multiple CCN sizes
-		Compare each of them on pascal VOC
 
-	\subsection{Results:} % (fold)
-	\label{sub:results_}
+	% 		\subsubsection{All Convolutional Net}
+	% 		\label{ssub:all_convolutional_net}
+
+			
+			
+
+
+	% In this paper, we want to emphasize the use CAM layers for their saliency and localization properties.
+	% The network we use is therefore a variant to the original network zhou2015learning. In the original paper, the authors introduce a combination of Global Average Pooling, followed by a weighted average and a softmax to classify their images. Here, we investigate the use of Global Average Pooling directly followed by a softmax function to classify our data. With this structure, this new network should capture further informations on spatial relations that the original could not grasp.
+
+	% \subsection{Methodology} % (fold)
+	% \label{sub:methodology}
+
+	% 	Deploy a VGG16 with CAM 
+	% 	Deploy a VGG16 with CCN + regularizer + multiple CCN sizes
+	% 	Compare each of them on pascal VOC
+
+	% \subsection{Results:} % (fold)
+	% \label{sub:results_}
 		
-		\begin{itemize}
-			\item The detector is position agnostic (Vs FCNN) from training to testing.
-			\item Can be use with variable image shapes.
-			\item May be use for "one shot" learning of given classes.
-		\end{itemize}
+	% 	\begin{itemize}
+	% 		\item The detector is position agnostic (Vs FCNN) from training to testing.
+	% 		\item Can be use with variable image shapes.
+	% 		\item May be use for "one shot" learning of given classes.
+	% 	\end{itemize}
 
-	A general comment we can make on both the original model and ours, is that both of the models are training-position-agnostic. What we mean here is that both networks can generalize the concept of an object independently of their position in the training set. If we consider a classification task where the network has to classify shoes against many other other classes, and a set of images randomly chosen from the web, it's very likely that all the images display these shoes at the bottom of the image.\\
-	The learned distribution (by the network), and a-priori would be fine, if we were to test our networks on the same type of dataset (randomly chosen from the web) but could present weaknesses if we were to test this network on a dataset without this probability distribution (eg: pictures grabed from a mobile platform, like a humanoid robot, or a fying drone).
+	% A general comment we can make on both the original model and ours, is that both of the models are training-position-agnostic. What we mean here is that both networks can generalize the concept of an object independently of their position in the training set. If we consider a classification task where the network has to classify shoes against many other other classes, and a set of images randomly chosen from the web, it's very likely that all the images display these shoes at the bottom of the image.\\
+	% The learned distribution (by the network), and a-priori would be fine, if we were to test our networks on the same type of dataset (randomly chosen from the web) but could present weaknesses if we were to test this network on a dataset without this probability distribution (eg: pictures grabed from a mobile platform, like a humanoid robot, or a fying drone).
