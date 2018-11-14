@@ -14,7 +14,7 @@ import tf_lstm
 import UCF_reader
 
 
-# img = Image.open("/home/mmoreaux/work/perso/implementation/images_test/IMG_20160420_164136.jpg")
+# img = Image.open("/home/mmoreaux/Desktop/computer1.jpg")
 # img = img.resize([227,227], Image.ANTIALIAS)
 
 

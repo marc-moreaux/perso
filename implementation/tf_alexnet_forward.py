@@ -103,7 +103,7 @@ for nbElems in [1,5,10]:
 
 
 
-
+&
 
 # import video
 # a = video.asvideo("/home/mmoreaux/Desktop/recording2.avi")

@@ -37,8 +37,8 @@ class MY_LSTM:
     #  - memory of previous cell's values
     #  - output classifier
     #
-    self.wCells = tf.Variable(tf.truncated_normal([self.nbInputs+self.nbCells, self.nbCells*4], -0.1, 0.1))
-    self.bCells = tf.Variable(tf.zeros([1, self.nbCells*4]))
+    self.wCells  = tf.Variable(tf.truncated_normal([self.nbInputs+self.nbCells, self.nbCells*4], -0.1, 0.1))
+    self.bCells  = tf.Variable(tf.zeros([1, self.nbCells*4]))
     saved_output = tf.Variable(tf.truncated_normal([self.batchSize, self.nbCells], -0.1, 0.1), trainable=False)
     saved_state  = tf.Variable(tf.truncated_normal([self.batchSize, self.nbCells], -0.1, 0.1), trainable=False)
     wClassif = tf.Variable(tf.truncated_normal([self.nbCells, self.nbOutputs], -0.1, 0.1))

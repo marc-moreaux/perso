@@ -386,7 +386,14 @@ class Video(object):
             out[i] = func(im, args)
         return asvideo(out)
 
-    def colour_map(self, cmap=pylab.cm.jet):
-        '''Colour maps a video  that is not 3 channel uint8'''
-        vmax = self.V.max()
-        return self.apply_to_frames(_colour_map, vmax)
+    # def colour_map(self, cmap=pylab.cm.jet):
+    #     '''Colour maps a video  that is not 3 channel uint8'''
+    #     vmax = self.V.max()
+    #     return self.apply_to_frames(_colour_map, vmax)
+
+
+
+
+if __name__ == '__main__':
+    import video
+    path = "/home/mmoreaux/Downloads/13206708_1173705309326345_1701627277_n.mp4"

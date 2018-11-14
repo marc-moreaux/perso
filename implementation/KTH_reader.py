@@ -32,7 +32,6 @@ class KTH_videos:
     ds_labels = np.ndarray( (500,3), dtype='uint8')
     
     # Divide dataset into x files
-    # there is a mistake at (idx+idx2)%500 with overlap possibilities at 501 == 1
     idx = 0
     for f in os.listdir(self.avi_dir):
       # print(f)

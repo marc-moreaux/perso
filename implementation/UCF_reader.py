@@ -6,11 +6,9 @@ import subprocess, re, os
 from PIL import Image
 import numpy as np
 import random
-# import matplotlib.pyplot as plt
 import pickle
+import video
 
-# provide your own ffmpeg here
-ffmpeg = 'ffmpeg'
 
 
 
@@ -28,9 +26,7 @@ class UCF_videos:
   def __init__(self):
     self.pwd = os.path.abspath("./")
     self.path = self.pwd+"/UCF-101"
-    self.train01 = list()
-    self.test01  = list()
-    self.dataset = list()
+    self.classes = ["Apply Eye Makeup", "Apply Lipstick", "Baby Crawling", "Bench Press", "Biking", "Blow Dry Hair", "Blowing Candles", "Brushing Teeth", "Cutting In Kitchen", "Frisbee Catch", "Haircut", "Handstand Pushups", "Handstand Walking", "Head Massage", "Jump Rope", "Jumping Jack", "Knitting", "Lunges", "Mopping Floor", "Pizza Tossing", "Playing Guitar", "Playing Piano", "Playing Violin", "Playing Flute", "Shaving Beard", "Tai Chi", "Typing", "Walking with a dog", "Writing On Board"]
   
   def path_of_pkl(self, subset, idx):
     """
@@ -183,110 +179,55 @@ class UCF_videos:
       # Here is next batch
       yield batch_train, batch_labels
   
-#  def play_batch(self, npVideoFrames, framerate=5):
-#    self.framerate = 5
-#    im = plt.imshow(npVideoFrames[0])
-#    for (idx,frame) in enumerate(npVideoFrames):
-#     plt.pause(1/self.framerate)
-#     im.set_data(frame)
-#   plt.show()
-
-
-
-# a = UCF_videos()
-# a.extract_video_subset(1)
-# b = a.next_batch(batchSize=5)
-# y = next(b)
-# # a.play_batch(y[0][0])
 
 
 
 
 
-# play(a.dataset[0][0])
-
-
-
-# # resize videoName to 320x240 and store in resizedName
-# # if succeed return True
-# def resize(videoName, resizedName):
-#     if not os.path.exists(videoName):
-#         print('%s does not exist!' % videoName)
-#         return False
-#     # call ffmpeg and grab its stderr output
-#     p = subprocess.Popen([ffmpeg, "-i", videoName], stderr=subprocess.PIPE)
-#     out, err = p.communicate()
-#     # search resolution info
-#     if err.find('differs from') > -1:
-#         return False
-#     reso = re.findall(r'Video.*, ([0-9]+)x([0-9]+)', err)
-#     if len(reso) < 1:
-#         return False
-#     # call ffmpeg again to resize
-#     subprocess.call([ffmpeg, '-i', videoName, '-s', '320x240', resizedName])
-#     return check(resizedName)
-
-# # check if the video file is corrupted or not
-# def check(videoName):
-#     if not os.path.exists(videoName):
-#         return False
-#     p = subprocess.Popen([ffmpeg, "-i", videoName], stderr=subprocess.PIPE)
-#     out, err = p.communicate()
-#     if err.find('Invalid') > -1:
-#         return False
-#     return True
-
-# def extract_frame(videoName,frameName):
-#     """Doc
-#     Extracts the frames from the input video (videoName)
-#     and saves them at the location (frameName)
-#     """
-#     #forces extracted frames to be 320x240 dim.
-#     if not os.path.exists(videoName):
-#         print('%s does not exist!' % videoName)
-#         return False
-#     # call ffmpeg and grab its stderr output
-#     print('ffmpeg -i %s -r 1 -s qvga --f image2 %s' % (videoName,frameName))
-#     p = subprocess.call('ffmpeg -i %s -r 10 %s' % (videoName,frameName), shell=True)
-#     return
-
-
-# def extract_frames(vidlist,vidDir,outputDir):
-#   f = open(vidlist, 'r')
-#   vids = f.readlines()
-#   f.close()
-#   fp = open("out.txt", "w+")
-#   vids = [video.rstrip() for video in vids]
-#   vids = [line.split(' ')[0] for line in vids]
-#   for vid in vids:
-#       videoName = os.path.join(vidDir,vid)
-#       frameName = os.path.join(outputDir, vid.split('.')[0]+"_%4d.jpeg")
-#       newFrameName = ""
-#       for piece in (frameName.split("/")[1:-3] + frameName.split("/")[-1:]):
-#         newFrameName += "/"+piece 
-#       fp.write(newFrameName)
-#       fp.write("\n")
-#       #extract_frame(videoName,newFrameName)
-#   fp.close()
 
 
 
 
 
-# orig_dir = "./UCF-101"
-# tmp_frames = "./UFC101_raw/train/tmp"
-
-# #playing a video saved in disk
-# video_pwd = os.path.join(orig_dir,"v_ApplyEyeMakeup_g01_c03.avi")
-
-# pwd = os.path.abspath("./")
-# ucf101_path = pwd+"/UCF-101"
-# trainlists = pwd+"/ucfTrainTestlist/"
-# trainlist01 = os.path.join(trainlists, 'trainlist01.txt')
-# testlist01 = os.path.join(trainlists, 'testlist01.txt')
-# training_output = pwd+"/UFC-101_raw/train"
-# testing_output = pwd+"/UFC-101_raw/test"
 
 
-# extract_frames(trainlist01, ucf101_path,training_output)
-# extract_frames(testlist01, ucf101_path,testing_output)
+
+
+
+class UCF_videos:
+  def __init__():
+    ''' Declare path to the folder where every avi were extracted from the zips
+    and declare an array with the class labels '''
+    self.UCF_folder = "/home/mmoreaux/datasets/UCF/"
+    self.avi_dir = "/home/mmoreaux/datasets/UCF/"
+    self.labels = ["ApplyEyeMakeup","ApplyLipstick","BabyCrawling","BenchPress","Biking","BlowDryHair","BlowingCandles","BrushingTeeth","CuttingInKitchen","FrisbeeCatch","Haircut","HandstandPushups","HandstandWalking","HeadMassage","JumpRope","JumpingJack","Knitting","Lunges","MoppingFloor","PizzaTossing","PlayingGuitar","PlayingPiano","PlayingViolin","PlayingFlute","ShavingBeard","TaiChi","Typing","WalkingWithDog","WritingOnBoard"]
+    self.subsets = {"train":[1,2,3,4],  "valid":[5], "test":[6] }
+
+  def create_db(self):
+    ''' Create dataset pickles from avi files
+    Each pickle is a tupple : (video_nparray, video_labels) 
+    where  video_nparray is an array of 500 items 
+    each item is a video sequence composed by 15 frames (3s at 5fps)'''
+    f = os.listdir(self.avi_dir)[0]
+    vid = video.asvideo(os.path.join(self.avi_dir,f)).V
+    # 500 samples of 3sec videos
+    ds_data   = np.ndarray( (500,15)+vid.shape[1:] , dtype='int8')
+    ds_labels = np.ndarray( (500,3), dtype='uint8')
+    
+    # Divide dataset into x files
+    idx = 0
+    for f in os.listdir(self.avi_dir):
+      # print(f)
+      if ".avi" in f:
+        vid = video.asvideo(os.path.join(self.avi_dir,f)).V
+        for idx2 in range(int(len(vid)/15)-1):
+          ds_data[(idx)%500] = vid[idx2*15 : (idx2+1)*15 ]-125
+          ds_labels[(idx)%500,0] = int(re.findall(r'\d+', f)[0])
+          ds_labels[(idx)%500,1] = int(re.findall(r'\d+', f)[1])
+          ds_labels[(idx)%500,2] = self.labels.index( re.findall(r'_(.*)_d+', f)[0] )
+          if idx % 500 == 0 and idx > 0: 
+            # Save subset in a file
+            print(idx," saving to ", self.db_path(int(idx/500)))
+            self.write_db(int(idx/500), ds_data, ds_labels)
+          idx += 1
+
